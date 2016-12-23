@@ -32,11 +32,11 @@
 ################################################
 # ACCESSORY SCRIPTS REQUIRED
 
-# 	get_seq_info.pl
-# 	getseq_multiple.pl
-# 	select_tab_first.pl
-# 	select_tab_equivalent.pl
-# 	calc_lineage_probability_v2.pl
+#   get_seq_info.pl
+#   getseq_multiple.pl
+#   select_tab_first.pl
+#   select_tab_equivalent.pl
+#   calc_lineage_probability.pl
 #   filter_blast.pl
 
 ################################################
@@ -153,7 +153,7 @@ use Benchmark;		# for timing code
     {
         print STDERR "\nFiltering blast input\n";
         my $pct_cutoff =$dh_config{min_align_coverage};
-        `$script_path/filter_blast_v2.pl -q $genome_fasta -t $tab_input -c $config_filename -f $pct_cutoff`;
+        `$script_path/filter_blast.pl -q $genome_fasta -t $tab_input -c $config_filename -f $pct_cutoff`;
       
         my @suffixlist = ("faa", "fasta", "fsa", "m8", "blast", "filt60");
         my $basename = fileparse($tab_input, @suffixlist);
@@ -1003,8 +1003,8 @@ sub check_args
                             "select_tab_equivalent.pl",
                             "getseq_multiple.pl",
                             "get_seq_info.pl",
-                            "calc_lineage_probability_v2.pl",
-                            "filter_blast_v2.pl",);         
+                            "calc_lineage_probability.pl",
+                            "filter_blast.pl",);         
          foreach (@program_list)
          {
            my $program =  "$script_path/$_";
@@ -1288,12 +1288,12 @@ sub calc_LPI
 		{
 			print OUTPUT "$_\n";
 		}
- 	my $output = `$script_path/calc_lineage_probability_v2.pl lpi_lineage_list`; 	
+ 	my $output = `$script_path/calc_lineage_probability.pl lpi_lineage_list`; 	
  	my @output_lines = split "\n", $output;
  	
  if ($debug > 0)
  {
- 	`$script_path/calc_lineage_probability_v2.pl lpi_lineage_list > lpi_lineage_list_output`;
+ 	`$script_path/calc_lineage_probability.pl lpi_lineage_list > lpi_lineage_list_output`;
  }	
  	
 	my %probabilities = (); # key = lineage, value = preliminary LPI
