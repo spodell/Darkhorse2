@@ -79,29 +79,29 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
     de-compressed, and locally available:
     
         Genbank nr database raw fasta file
-            ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nr.gz
+            wget ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nr.gz
         Genbank Taxonomy database 
-        	ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
-        	ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+	    wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
+            wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
         	      
     Users must be able to obtain protein BLAST (BLASTP) search data for query
     sequences versus the Genbank nr database, with output in the same 
-    tab-delimited format as NCBI BLAST+ outfmt 6 (old NCBI blast -m8).
+    tab-delimited format as NCBI BLAST+ outfmt 6 (old NCBI blastall format -m8).
     The program Diamond is highly recommended for this purpose, although
     NCBI blast or any alternative (e.g. cluster-accelerated) software may 
     also be used, as long as the output ends up in the same tab-delimited 
     format. These tab-delimited output files are used as DarkHorse program input.  
     
-    The DarkHorse program is critically dependent on pre-computed
-	associations of BLAST search output with taxonomic classification,
-	stored in a MySQL relational database. The program will not work
-	unless all database (Genbank nr) sequence ID numbers from the blast
-	search match and ID numbers in the MySQL database match EXACTLY.
-        
-	NCBI changes ID numbers for large numbers of Genbank nr proteins very
-	frequently. For this reason, the MySQL database used with the DarkHorse
-	program must be updated to match the version of Genbank nr used for
-	doing BLAST searches every time the Genbank nr version is changed.
+    The DarkHorse program is critically dependent on pre-computed associations of
+    BLAST search output with taxonomic classification, stored in a MySQL relational
+    database. The program will not work unless all database sequence ID numbers from
+    the blast search match ID numbers in the MySQL database match EXACTLY.
+	
+    The DarkHorse installer program creates a fasta-format file of taxonomically
+    informative protein sequences. This file (or a subset of sequences from this file) 
+    must be used as the reference database for BLAST search input to the DarkHorse 
+    program. It is possible to add unpublished sequences to the reference database, 
+    but this must be done using the specific scripts and procedures described below.
 	     
 ----------------------------------------
 INSTALLATION
@@ -117,10 +117,17 @@ INSTALLATION
             
             OR
             
-         ./install.pl  -p program_directory_path -c config_filename -n number_processors   
+         ./install.pl  -p program_directory_path -c config_filename   
     
     Note that the installation script may take a substantial amount of time to run 
-    (e.g many hours), but can be substantially accelerated using multiple CPU's.
+    (e.g many hours). If > 16GB of RAM are available at the time of program execution, 
+    performance can be accelerated by adjusting the "max_lines_per_packet" parameter 
+    in the configuration file. However, if this parameter is set too high, MySQL 
+    will fail due to insufficient memory. Recommended settings are as follows:
+    
+    	16 GB RAM  [max_lines_per_packet]=4000  (default value)
+    	32 GB RAM  [max_lines_per_packet]=8000
+    	64 GB RAM  [max_lines_per_packet]=16000
 
 ----------------------------------------
 
