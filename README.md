@@ -23,9 +23,10 @@ CONTENTS
 DESCRIPTION
 
     Darkhorse is an experimental program that defines phylogenetic
-    relatedness of blastp hits for a set of proteins against the NCBI Genbank 
-    nr database, using a lineage probability index (LPI) score. The basic
-    algorithm used to calculate LPI scores and its application in predicting
+    relatedness of blastp hits for a set of proteins against a taxonomically
+    diverse reference database (e.g. NCBI Genbank nr) using a lineage 
+    probability index (LPI) score. The basic lgorithm used to calculate 
+    LPI scores and its application in predicting
     horizontal gene transfer are described in the following publications. These
     publications should be cited in any work that uses the algorithm or results
     obtained using this software.
@@ -40,18 +41,18 @@ DESCRIPTION
         Bioinformatics 9:419          
     
     Those desiring to incorporate the DarkHorse software, the associated
-	DarkHorse HGT Candidate database, or information downloaded from the
-	database into commercial products, or to use any of these materials for
-	commercial purposes, should contact the Technology Transfer &
-	Intellectual Property Services, University of California, San Diego,
-	9500 Gilman Drive, Mail Code 0910, La Jolla, CA 92093-0910, Ph: (858)
-	534-5815, FAX: (858) 534-7345, E-MAIL: invent@ucsd.edu.
+    DarkHorse HGT Candidate database, or information downloaded from the
+    database into commercial products, or to use any of these materials for
+    commercial purposes, should contact the Technology Transfer &
+    Intellectual Property Services, University of California, San Diego,
+    9500 Gilman Drive, Mail Code 0910, La Jolla, CA 92093-0910, Ph: (858)
+    534-5815, FAX: (858) 534-7345, E-MAIL: invent@ucsd.edu.
     
 ----------------------------------------
 SYSTEM REQUIREMENTS/DEPENDENCIES
    
    Hardware requirements include sufficient disk space to store reference protein
-   sequences large MySQL relational database tables based on these sequences, 
+   sequences, large MySQL relational database tables based on these sequences, 
    and tab-delimited BLASTP sequence comparisons for query sequences.  
    Total disk space required is roughly triple the size of the decompressed protein 
    reference database. Program performance depends primarily on MySQL database 
@@ -85,23 +86,25 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
             wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
         	      
     Users must be able to obtain protein BLAST (BLASTP) search data for query
-    sequences versus the Genbank nr database, with output in the same 
-    tab-delimited format as NCBI BLAST+ outfmt 6 (old NCBI blastall format -m8).
-    The program Diamond is highly recommended for this purpose, although
-    NCBI blast or any alternative (e.g. cluster-accelerated) software may 
-    also be used, as long as the output ends up in the same tab-delimited 
-    format. These tab-delimited output files are used as DarkHorse program input.  
+    sequences versus a large, taxonomically informative set of reference sequences, 
+    (e.g. Genbank nr) with output in the same  tab-delimited format as 
+    NCBI BLAST+ outfmt 6 (equivalent to old NCBI blastall format -m8). The program 
+    Diamond is highly recommended for this purpose, although NCBI blast or any 
+    alternative (e.g. cluster-accelerated) software may also be used instead, as long 
+    as the output ends up in the same tab-delimited format. These tab-delimited output 
+    files are used as DarkHorse program input.  
     
     The DarkHorse program is critically dependent on pre-computed associations of
-    BLAST search output with taxonomic classification, stored in a MySQL relational
+    BLAST search output with taxonomic classifications that are stored in a MySQL relational
     database. The program will not work unless all database sequence ID numbers from
-    the blast search match ID numbers in the MySQL database match EXACTLY.
+    the blast search match ID numbers in the MySQL database EXACTLY.
 	
-    The DarkHorse installer program creates a fasta-format file of taxonomically
-    informative protein sequences. This file (or a subset of sequences from this file) 
-    must be used as the reference database for BLAST search input to the DarkHorse 
-    program. It is possible to add unpublished sequences to the reference database, 
-    but this must be done using the specific scripts and procedures described below.
+    To make this easier, the DarkHorse installer program now creates a fasta-format file 
+    of taxonomically informative protein sequences suitable as blast search references. 
+    This file (or a subset of its sequences) must be used as the reference database 
+    for BLAST search input to the DarkHorse program. It is possible to add custom, unpublished 
+    sequences to the reference database, but this must be done using the specific scripts 
+    and procedures described below.
 	     
 ----------------------------------------
 INSTALLATION
@@ -120,19 +123,34 @@ INSTALLATION
          ./install.pl  -p program_directory_path -c config_filename   
     
     Note that the installation script may take a substantial amount of time to run 
-    (e.g many hours). If > 16GB of RAM are available at the time of program execution, 
+    (e.g many hours). If more than 16GB of RAM are available at the time of program execution, 
     performance can be accelerated by adjusting the "max_lines_per_packet" parameter 
-    in the configuration file. However, if this parameter is set too high, MySQL 
-    will fail due to insufficient memory. Recommended settings are as follows:
+    in the configuration file. However, if this parameter is set too high, MySQL operations
+    will fail due to insufficient memory. Recommended settings are as follows, based on total
+    system memory:
     
     	16 GB RAM  [max_lines_per_packet]=4000  (default value)
     	32 GB RAM  [max_lines_per_packet]=8000
     	64 GB RAM  [max_lines_per_packet]=16000
+	
+   In addition to creating and populating required MySQL tables, the installation script produces
+   a new configuration file (if none was specified on the command line), a log file containing 
+   detailed notes on any errors that may have occurred, and new fasta formatted sequence file
+   of taxonomically informative sequences. The taxonomically informative fasta file will be 
+   named using the following convention:
+            
+                databasename_informative_ref_seqs.fasta    
+   
+   Users will need to format this file of protein sequences as a reference database for subsequent 
+   blastp searches using Diamond or NCBI-blast software.   	
 
 ----------------------------------------
 
-TESTING
+INSTALLATION TESTING
 
+    NOTE: Revised installation testing software for DarkHorse version 2 is still under development,
+    and is not yet included in the product package.
+    
     After DarkHorse installation is complete, it can be tested using the
     sample data and test script provided:
     
@@ -157,35 +175,21 @@ USAGE INSTRUCTIONS
     A. General Procedure
         
         1. Run a BLAST query of all protein sequences in a genome (or metagenome)
-            against the same version of Genbank nr used to construct the DarkHorse
-            database, choosing output format -m8 (tab-delimited). 
+           against the informative sequence set output by the installer program.
             
-            Example Diamond BLASTP parameters:   
-            	diamond blastp -d nr -q genome.faa -a genome.daa -t . --max-target-seqs 100 -p 4
-            	diamond view -a genome.daa -f tab  -o genome.m8
-            
-           Example NCBI blast+ parameters
-           
-           
-           Example old NCBI blastp parameters:         
-              blastall -p blastp -i genome.faa -d nr -m8 -e 1e-5 -b 100 -o genome.blast
-                                                
-          It is essential that sequence id numbers from the database sequences
-          used in the BLAST search match id numbers in the DarkHorse database. If
-          you update your Genbank database version, you must also update your
-          DarkHorse database. (Genbank usually changes a very large number of id
-          numbers in each new relase). Although it is possible to append new id
-          numbers to the old DarkHorse database, it is recommended that users
-          create a new DarkHorse database version instead. This decreases
-          database loading time (updates are very slow), and keeps total database
-          size to a minimum, reducing database access times and maximizing
-          DarkHorse program efficiency.                                       
-                              
+            Example Diamond BLASTP parameters:
+	    	diamond makedb --in dh2_informative.fasta -d dh2_informative --threads 2
+            	diamond blastp -d dh2_informative.dmnd -q genome.faa -a genome_dh2_informative.daa -t . --max-target-seqs 100 -p 4
+            	diamond view -a genome_dh2_informative.daa -f tab  -o genome_dh2_informativep.m8
+		
+          Don't forget - if you update your DarkHorse database version, you must also 
+	  update the informative fasta sequences used in the blast search. 
+	                                
         2. Run darkhorse.pl from the unix command line, e.g.
             
             darkhorse.pl -c config file -t blast_tab_infile -e exclude list -g self.fasta 
                
-            Output from the program will be contained in a new directory, named
+            Output from the program will be written to a new directory, named
             using the following convention:
             
                 calcs_processID_filt_setting 
@@ -236,69 +240,73 @@ USAGE INSTRUCTIONS
                 informative matches. For metagenomic studies, users willing to accept
                 reduced specificity may want to try lowering this value to boost
                 sensitivity.
-            
-            -b  <blast filter>  [default = off]
-                Performs two functions, by calling a subscript (filter_blast.pl)
-                located in the bin/acessory_scripts directory. First, creates and
-                saves two pre-calculated index files that greatly accelerate
-                subsequent DarkHorse runs on the same data set, for example when
-                using a different exclusion list or different filter threshold
-                settings. Second, it provides a mechanism for pre-filtering BLAST
-                alignments to ensure that they cover a certain minimum percentage of
-                total sequence length, for both query and database sequences. The
-                purpose of this pre-filtering step is to remove alignments whose
-                coverage is less than a reasonable limit for defining orthology. The
-                recommended value for genomic sequence data is 0.7, which retains
-                only alignments that cover at least 70% of both query and match
-                sequences.
-                
-            -q  <query_info_file>
-                specifies a query index file created in a previous run of option -b.
-                
-            -m  <match_info_file>
-                specifies a match index file created in a previous run of option -b.
-                      
-    
+		
+    C. Supplementing a previously installed MySQL database 
+    	
+	Installed DarkHorse databases can be supplemented with additional sequences, including
+	private, unpublished data, using the following script
+	
+		Darkhorse2/bin/installation_scripts/update_dh_database.pl
+		
+        In addition to a DarkHorse configuration file and fasta format file of input amino acid 
+	sequences, this script also requires a tab-delimited index file with one line per sequence, 
+	divided into three columns (note that columns 2 and 3 will be repeated on multiple lines).
+	
+		sequence_id_number    species_name     lineage
+		
+	The lineage column is a semicolon(;)-delimited lineage string, with taxonomic groups ranging
+	from superkingdom to genus level listed in left-to-right order, e.g.
+	
+		Bacteria;Cyanobacteria;Gloeobacteria;Gloeobacterales;Gloeobacteraceae;Gloeobacter
+    	
+	If the species of interest is already included in NCBI's taxonomy database, it's lineage
+	string can be found by searching the NCBI taxonomy website (https://www.ncbi.nlm.nih.gov/taxonomy).
+	For novel organisms where no exact lineage is available from NCBI, users should just provide 
+	their best guess, using lineages for closest available relatives as a model.
+		
 ----------------------------------------
 
 VERSION HISTORY
     
+  Version 2.0 (beta) December 24, 2016
+     Removed reliance on NCBI Genbank gi numbers. Provides a faster, more efficient 
+     database installation process, and allows use of custom reference data sets, 
+     including private and/or unpublished sequences.
+  Version 1.5 October 2, 2013
+     fixed bug causing LPI mis-calculation for organisms whose NCBI taxonomy lineage string
+     contains two identical terms, for example Actinobacteria, which is both a phylum name 
+     and a class name in the following example:
+     Bacteria;Actinobacteria;Actinobacteria;Actinobacteridae;Bifidobacteriales;Bifidobacteriaceae;Gardnerella)
+  Version 1.4 July 19, 2010
+     added workaround for for NCBI BLAST bug, that gives inconsistent, truncated ID numbers
+     for EMBL database entries if Genbank nr sequences are extracted from pre-formatted
+     blast files using fastacmd, instead of downloaded directly from NCBI as as 
+     unformatted fasta files.
+  Version 1.3 December 14, 2009
+     fixed incompatibility with some versions of Linux operating system (e.g. Centos and Ubuntu)
+     due to syntax differences in unix sort command.
+  Version 1.2 August 19, 2009
+     fixed problem recognizing high-level self-id keywords occurring in lineage string only
+     (e.g. kingdom, phylum, class, order)
+  Version 1.1 April 6, 2009
+     revised program installation script to handle larger data sets without memory errors
+     added new requirement for NCBI Taxonomy reference file gi_taxid_prot.dmp
+     removed requirement for NCBI accessory program fastacmd
+  Version 1.0 October 24, 2008
+     added error check for Genbank ID number mismatch between database and blast hits
+  Version 0.9 May 9, 2008 
+     fixed problem parsing extra space characters in NCBI blast output
+     fixed problem parsing non-self matches if number exceeds 999
+     added filters to to remove "subg", and "candidate division" from lineage
     Version 0.8 August 15, 2007
-    	initial beta distribution.
-    Version 0.9 May 9, 2008 
-    	fixed problem parsing extra space characters in NCBI blast output
-    	fixed problem parsing non-self matches if number exceeds 999
-    	added filters to to remove "subg", and "candidate division" from lineage
-    Version 1.0 October 24, 2008
-    	added error check for Genbank ID number mismatch between database and blast hits
-    Version 1.1 April 6, 2009
-    	revised program installation script to handle larger data sets without memory errors
-    	added new requirement for NCBI Taxonomy reference file gi_taxid_prot.dmp
-    	removed requirement for NCBI accessory program fastacmd 
-    Version 1.2 August 19, 2009
-    	fixed problem recognizing high-level self-id keywords occurring in lineage string only
-    	(e.g. kingdom, phylum, class, order)
-    Version 1.3 December 14, 2009
-    	fixed incompatibility with some versions of Linux operating system (e.g. Centos and Ubuntu)
-    	due to syntax differences in unix sort command.
-    Version 1.4 July 19, 2010
-    	added workaround for for NCBI BLAST bug, that gives inconsistent, truncated ID numbers
-    	for EMBL database entries if Genbank nr sequences are extracted from pre-formatted
-    	blast files using fastacmd, instead of downloaded directly from NCBI as as 
-    	unformatted fasta files.
-     Version 1.5 October 2, 2013
-     	fixed bug causing LPI mis-calculation for organisms whose NCBI taxonomy lineage string
-     	contains two identical terms, for example Actinobacteria, which is both a phylum name 
-     	and a class name in the following example:
-     	Bacteria;Actinobacteria;Actinobacteria;Actinobacteridae;Bifidobacteriales;Bifidobacteriaceae;Gardnerella)
-     	
-   	
+     initial beta distribution.
+  	
 ---------------------------------------- 
 
  CONTACT INFORMATION
  
     Please send bug reports to: spodell@ucsd.edu
-    Copyright 2016 S. Podell, University of California, San Diego. 
+    Copyright 2017 S. Podell, University of California, San Diego. 
     All rights reserved.
   
 ----------------------------------------
