@@ -147,31 +147,7 @@ INSTALLATION
    
    Users will need to format this file of protein sequences as a reference database for subsequent 
    blastp searches using Diamond or NCBI-blast software. 
-   	
-----------------------------------------
-
-INSTALLATION TESTING
    
-    NOTE: Revised installation testing software for DarkHorse version 2 is still under development,
-    and is not yet included in the product package.
-      
-    After DarkHorse installation is complete, it can be tested using the
-    sample data and test script provided:
-    
-         ./test_dh.pl  -c configuration file
-             
-    Results of this test are written to a new directory called
-    "test_results". Previous test results are overwritten unless this
-    directory is re-named. The testing script may attempt to install sample
-    sequences in the DarkHorse MySQL database specified by the configuration
-    file. If any of these sequences have been entered previously, the
-    command line may show error messages of the following type, which can be
-    safely ignored:
-     
-     DBD::mysql::db do failed: Duplicate entry'gi|110807720|ref|YP_691240.1|' for 
-     key 1 at darkHorse-0.8/bin/installation_scripts/load_lineage_index_table.pl 
-     line 184, <INPUT> line 7.     
-     
 ----------------------------------------
 
 USAGE INSTRUCTIONS
