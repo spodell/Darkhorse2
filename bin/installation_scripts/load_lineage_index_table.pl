@@ -154,11 +154,13 @@ if (defined $overwrite || $found_table == 0)
 	my $total_num = $1;
 	print STDERR "total num = $total_num\n";
 	my @skipped_lines = ();
-	$max_lines_per_packet = 2000;
-	if (defined $update)
+	if (defined $overwrite || $found_table == 0)
 	{
-		$max_lines_per_packet = 1;
-	
+		$lines_per_packet = $max_lines_per_packet;
+	}
+	elsif (defined $update)
+	{
+		$lines_per_packet = 1;
 	}
 
 # compose database population command, send insert statement packets
