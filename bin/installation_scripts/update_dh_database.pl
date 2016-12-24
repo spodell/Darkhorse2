@@ -9,7 +9,7 @@
 	# tab-delimited file containing the following columns:
 		# protein_id_num
 		# Species name
-		# colon-delimited lineage string from superkingdom to genus level, e.g.
+		# semicolon-delimited lineage string from superkingdom to genus level, e.g.
 			# Bacteria;Cyanobacteria;Gloeobacteria;Gloeobacterales;Gloeobacteraceae;Gloeobacter
 	# fasta format amino acid sequence file with sequence ids matching tab-delimited file
 
