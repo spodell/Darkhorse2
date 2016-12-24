@@ -74,7 +74,7 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
     Prior to DarkHorse program installation, a database must be created 
     from within the Mysql program to accept DarkHorse input, e.g.
     
-        mysql> create database darkhorse_01;
+        mysql -u username -p -e "create database db_name;"
         
     The following public database information must be downloaded, de-compressed, 
     and locally available:
@@ -191,7 +191,7 @@ USAGE INSTRUCTIONS
                               
         2. Run darkhorse.pl from the unix command line, e.g.
             
-            darkhorse.pl -c config file -t blast_tab_infile -e exclude list -g self.fasta 
+            darkhorse.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
                
             Output from the program will be written to a new directory, named
             using the following convention:
@@ -206,7 +206,7 @@ USAGE INSTRUCTIONS
         specified in the configuration file. File names should include complete
         paths, if not in current working directory.
         
-        Usage: ./darkhorse.pl -c config file -t blast_tab_infile -e exclude list -g self.fasta 
+        Usage: ./darkhorse.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
 
           Required parameters
             -c  <configuration file name>   
