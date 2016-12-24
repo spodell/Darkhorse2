@@ -142,7 +142,11 @@ use DBI;
 	my $total_num = $1;
 	print STDERR "total num = $total_num\n";
 	my @skipped_lines = ();
-	if (defined $update)
+	if (defined $overwrite || $found_table == 0)
+	{
+		$lines_per_packet = $max_lines_per_packet;
+	}
+	elsif (defined $update)
 	{
 		$lines_per_packet = 1;
 	}
