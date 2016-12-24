@@ -22,14 +22,14 @@ CONTENTS
 ----------------------------------------
 DESCRIPTION
 
-	Darkhorse is an experimental program that defines phylogenetic
-	relatedness of blastp hits for a set of proteins against a
-	taxonomically diverse reference database (e.g. NCBI Genbank nr) using
-	a lineage probability index (LPI) score. The basic algorithm used to
-	calculate LPI scores and its application in predicting horizontal gene
-	transfer are described in the following publications. These
-	publications should be cited in any work that uses the algorithm or
-	results obtained using this software.
+   Darkhorse is an experimental program that defines phylogenetic
+   relatedness of blastp hits for a set of proteins against a
+   taxonomically diverse reference database (e.g. NCBI Genbank nr) using
+   a lineage probability index (LPI) score. The basic algorithm used to
+   calculate LPI scores and its application in predicting horizontal gene
+   transfer are described in the following publications. These
+   publications should be cited in any work that uses the algorithm or
+   results obtained using this software.
     
         Podell, S. and Gaasterland, T. (2007). DarkHorse: A method for 
         genome-wide prediction of horizontal gene transfer. Genome Biology 
@@ -40,13 +40,13 @@ DESCRIPTION
         genomes, identified using the DarkHorse algorithm. BMC
         Bioinformatics 9:419          
     
-    Those desiring to incorporate the DarkHorse software, the associated
-	DarkHorse HGT Candidate database, or information downloaded from the
-	database into commercial products, or to use any of these materials for
-	commercial purposes, should contact the Technology Transfer &
-	Intellectual Property Services, University of California, San Diego,
-	9500 Gilman Drive, Mail Code 0910, La Jolla, CA 92093-0910, Ph: (858)
-	534-5815, FAX: (858) 534-7345, E-MAIL: invent@ucsd.edu.
+   Those desiring to incorporate the DarkHorse software, the associated
+   DarkHorse HGT Candidate database, or information downloaded from the
+   database into commercial products, or to use any of these materials for
+   commercial purposes, should contact the Technology Transfer &
+   Intellectual Property Services, University of California, San Diego,
+   9500 Gilman Drive, Mail Code 0910, La Jolla, CA 92093-0910, Ph: (858)
+   534-5815, FAX: (858) 534-7345, E-MAIL: invent@ucsd.edu.
     
 ----------------------------------------
 SYSTEM REQUIREMENTS/DEPENDENCIES
@@ -76,14 +76,18 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
     
         mysql> create database darkhorse_01;
         
-    The following public database information must be downloaded,  
-    de-compressed, and locally available:
+    The following public database information must be downloaded, de-compressed, 
+    and locally available:
     
         Genbank nr database raw fasta file
             wget ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nr.gz
+	    gunzip nr.gz
         Genbank Taxonomy database 
-        	wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
-        	wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+            wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
+	    tar -xzvf taxdump.tar.gz
+	Protein accession-tax_id index file
+            wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+	    gunzip prot.accession2taxid.gz
         	      
     Users must be able to obtain protein BLAST (BLASTP) search data for query
     sequences versus a large, taxonomically informative set of reference sequences, 
@@ -94,22 +98,22 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
     as the output ends up in the same tab-delimited format. These tab-delimited output 
     files are used as DarkHorse program input.  
     
-	The DarkHorse program is critically dependent on pre-computed associations of
-	BLAST search output with taxonomic classifications that are stored in a MySQL relational
-	database. The program will not work unless all database sequence ID numbers from
-	the blast search match ID numbers in the MySQL database EXACTLY.
+   The DarkHorse program is critically dependent on pre-computed associations of
+   BLAST search output with taxonomic classifications that are stored in a MySQL relational
+   database. The program will not work unless all database sequence ID numbers from
+   the blast search match ID numbers in the MySQL database EXACTLY.
 	
-	To make this easier, the DarkHorse installer program now creates a fasta-format file 
-    of taxonomically informative protein sequences suitable as blast search references. 
-    This file (or a subset of its sequences) must be used as the reference database 
-    for BLAST search input to the DarkHorse program. It is possible to add custom, unpublished 
-    sequences to the reference database, but this must be done using the specific scripts 
-    and procedures described below.
+   To make this easier, the DarkHorse installer program now creates a fasta-format file 
+   of taxonomically informative protein sequences suitable as blast search references. 
+   This file (or a subset of its sequences) must be used as the reference database 
+   for BLAST search input to the DarkHorse program. It is possible to add custom, unpublished 
+   sequences to the reference database, but this must be done using the specific scripts 
+   and procedures described below.
 	     
 ----------------------------------------
 INSTALLATION
        
-    Installation is performed using a script that tests availability
+   Installation is performed using a script that tests availability
     of pre-requisite programs and databases and creates a customized
     configuration file, based on interactive user input. Optionally, a
     template configuration file is provided (templates/config_template),
@@ -148,7 +152,7 @@ INSTALLATION
 
 INSTALLATION TESTING
    
-    NNOTE: Revised installation testing software for DarkHorse version 2 is still under development,
+    NOTE: Revised installation testing software for DarkHorse version 2 is still under development,
     and is not yet included in the product package.
       
     After DarkHorse installation is complete, it can be tested using the
@@ -244,27 +248,33 @@ USAGE INSTRUCTIONS
      C. Supplementing a previously installed MySQL database 
     	
         Installed DarkHorse databases can be supplemented with additional sequences, 
-        including private, unpublished data, using the following script
+        including private, unpublished data, using the following script:
 	
-			Darkhorse2/bin/installation_scripts/update_dh_database.pl
+		Darkhorse2/bin/installation_scripts/update_dh_database.pl
 		
-        In addition to a DarkHorse configuration file and fasta format file of
-		input amino acid sequences, this script also requires a tab-delimited index
-		file with one line per sequence, divided into three columns (note that
-		columns 2 and 3 will be repeated on multiple lines).
+        This script will update a pre-existing MySQL DarkHorse database 
+	and create a file of additional taxonomically informative protein sequences
+	that can be used in BLASTP searches to supplement those previously 
+	associated with the database. 
+	
+	In addition to a DarkHorse configuration file and fasta format file of
+	input amino acid sequences, update_dh_database.pl also requires users to 
+	prepare a tab-delimited text file (unix line endings please) with one 
+	line per sequence. Each line should contain three columns (note that 
+	columns 2 and 3 will be repeated on multiple lines).
 	
 			sequence_id_number    species_name     lineage
 		
         The lineage column is a semicolon(;)-delimited lineage string, with taxonomic  
         group names ranging from superkingdom to genus listed in left-to-right order, e.g.
 	
-			Bacteria;Cyanobacteria;Gloeobacteria;Gloeobacterales;Gloeobacteraceae;Gloeobacter
+		Bacteria;Cyanobacteria;Gloeobacteria;Gloeobacterales;Gloeobacteraceae;Gloeobacter
     	
         If the species of interest is already included in NCBI's taxonomy
- 		database, it's lineage string can be found by searching the NCBI taxonomy
- 		website (https://www.ncbi.nlm.nih.gov/taxonomy). For novel organisms where
- 		no exact lineage is available from NCBI, users should just provide their
- 		best guess, using lineages for closest available relatives as a model.            
+ 	database, it's lineage string can be found by searching the NCBI taxonomy
+ 	website (https://www.ncbi.nlm.nih.gov/taxonomy). For novel organisms where
+ 	no exact lineage is available from NCBI, users should just provide their
+ 	best guess, using the lineages of closest available relatives as a model.            
     
 ----------------------------------------
 
