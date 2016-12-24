@@ -25,6 +25,7 @@ DESCRIPTION
    Darkhorse is an experimental program that defines phylogenetic
    relatedness of blastp hits for a set of proteins against a
    taxonomically diverse reference database (e.g. NCBI Genbank nr) using
+   a taxonomically-weighted distance algorithm, with results expressed as
    a lineage probability index (LPI) score. The basic algorithm used to
    calculate LPI scores and its application in predicting horizontal gene
    transfer are described in the following publications. These
@@ -66,13 +67,13 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
         (http://www.cpan.org/):
             DBI
             DBD::mysql
-        Mysql Relational Database software version 5.5 or later (or MariaDB equivalent)
+        MySQL Relational Database software version 5.5 or later (or MariaDB equivalent)
         	(https://dev.mysql.com/downloads/mysql/ or https://downloads.mariadb.org)     	
         Diamond software for performing protein sequence similarity searches:
        		(https://github.com/bbuchfink/diamond)   
             
     Prior to DarkHorse program installation, a database must be created 
-    from within the Mysql program to accept DarkHorse input, e.g.
+    from within the MySQL program to accept DarkHorse input, e.g.
     
         mysql -u username -p -e "create database db_name;"
         
@@ -91,7 +92,7 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
         	      
     Users must be able to obtain protein BLAST (BLASTP) search data for query
     sequences versus a large, taxonomically informative set of reference sequences, 
-    (e.g. Genbank nr) with output in the same  tab-delimited format as 
+    (e.g. Genbank nr) with output in the same tab-delimited format as 
     NCBI BLAST+ outfmt 6 (equivalent to old NCBI blastall format -m8). The program 
     Diamond is highly recommended for this purpose, although NCBI blast or any 
     alternative (e.g. cluster-accelerated) software may also be used instead, as long 
@@ -155,12 +156,15 @@ USAGE INSTRUCTIONS
     A. General Procedure
         
        1. Run a BLAST query of all protein sequences in a genome (or metagenome)
-          against the informative sequence set output from the installer program. 
+          against the informative sequence set output from the installer program.
+	  Recommended e-value setting for HGT determinations is 1e-5. For metagenomic
+          binning or highly fragmented draft sequences, a less stringent e-value,
+          (e.g. 1e-3) may improve sensitivity.
             
             Example Diamond BLASTP parameters:
             	diamond makedb --in dh2_informative.fasta -d dh2_informative --threads 2
-            	diamond blastp -d dh2_informative.dmnd -q genome.faa -a genome_dh2_informative.daa -t . --max-target-seqs 100 -p 4
-            	diamond view -a genome_dh2_informative.daa -f tab  -o genome_dh2_informativep.m8          
+            	diamond blastp -d dh2_informative.dmnd -q genome.faa -a genome_dh2.daa -e 1e-5 -t . --max-target-seqs 100 -p 4
+            	diamond view -a genome_dh2.daa -f tab  -o genome_dh2.m8          
                                             
           Don't forget - if you update your DarkHorse database version, you must also 
           update the informative fasta sequences used in the blast search.                                         
@@ -237,7 +241,7 @@ USAGE INSTRUCTIONS
 	input amino acid sequences, update_dh_database.pl also requires users to 
 	prepare a tab-delimited text file (unix line endings please) with one 
 	line per sequence. Each line should contain three columns (note that 
-	columns 2 and 3 will be repeated on multiple lines).
+	columns 2 and 3 may be repeated on multiple lines).
 	
 			sequence_id_number    species_name     lineage
 		
