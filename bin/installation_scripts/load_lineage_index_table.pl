@@ -156,11 +156,11 @@ if (defined $overwrite || $found_table == 0)
 	my @skipped_lines = ();
 	if (defined $overwrite || $found_table == 0)
 	{
-		$lines_per_packet = $max_lines_per_packet;
+		#$max_lines_per_packet = 2000;
 	}
 	elsif (defined $update)
 	{
-		$lines_per_packet = 1;
+		$max_lines_per_packet = 1;
 	}
 
 # compose database population command, send insert statement packets
