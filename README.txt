@@ -195,7 +195,8 @@ USAGE INSTRUCTIONS
                 Fasta format query sequence file used for BLAST search
             
             -t  <tab delimited BLAST input file>
-                BLAST results for query sequences versus Genbank nr database.
+                BLAST results for query sequences versus informative reference sequences
+		obtained during program installation.
                 
             -e  <exclude list>
                 File containing a list of exclusion terms, one to a line. Can be any
