@@ -247,7 +247,8 @@ USAGE INSTRUCTIONS
 			sequence_id_number    species_name     lineage
 		
         The lineage column is a semicolon(;)-delimited lineage string, with taxonomic  
-        group names ranging from superkingdom to genus listed in left-to-right order, e.g.
+        group names ranging from superkingdom to genus listed in descending
+	left-to-right order, e.g.
 	
 	    Bacteria;Cyanobacteria;Gloeobacteria;Gloeobacterales;Gloeobacteraceae;Gloeobacter
     	
