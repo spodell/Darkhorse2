@@ -277,8 +277,11 @@ VERSION HISTORY
     
      Version 2.0 (beta) December 24, 2016
      	Removed reliance on NCBI Genbank gi numbers. Provides a faster, more efficient 
-     	database installation process, and allows use of custom reference data sets, 
-     	including private and/or unpublished sequences.
+     	database installation process, and allows the use of custom reference data sets, 
+     	including private and/or unpublished sequences. The installation software now 
+	furnishes users with a verified, database-matched set of informative reference   
+	sequences for use in subsequent BLAST searches, along with optional tools  
+	for subdividing these sequences into smaller, taxonomically focused subsets.
      Version 1.5 October 2, 2013
      	fixed bug causing LPI mis-calculation for organisms whose NCBI taxonomy lineage string
      	contains two identical terms, for example Actinobacteria, which is both a phylum name 
