@@ -97,7 +97,7 @@ use File::Spec;
 	while (<INPUT>)
 	{
 		chomp;
-		next if $_ =~ /^\s+$/;
+		next if ($_ =~ /^\s+$/ || length $_ < 2);
 		my $wildcard_kw = qq("%$_%");
 		push @sql_search_terms, "$wildcard_kw";
 	}
@@ -107,6 +107,15 @@ use File::Spec;
 	my $tmp_id_list_filename = "tmp_id_list";
 	my $num_selected = &select_sequence_ids($tmp_id_list_filename, \@sql_search_terms);
 	print STDERR "  Found $num_selected id numbers matching criteria\n";
+
+# make sure id numbers in tmp id list file are unique
+	my $tmp2 = "$tmp_id_list_filename"."_uniq";
+	`sort $tmp_id_list_filename |uniq > $tmp2`;
+	`mv $tmp2 $tmp_id_list_filename`;
+	my $uniq_hits = `wc -l $tmp_id_list_filename`;
+	chomp $uniq_hits;
+	
+	print STDERR "  Found $uniq_hits unique/$num_selected id numbers matching criteria\n";	
 
 # select sequences using accessory script, send to file 
 	my $select_fasta_filename = "tax_select_dh.fasta";
