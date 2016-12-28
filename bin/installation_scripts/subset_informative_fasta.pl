@@ -96,6 +96,7 @@ use File::Spec;
 	open (INPUT, "$abs_keywords_file") or die "unable to open keywords file $abs_keywords_file.\n$!\n";
 	while (<INPUT>)
 	{
+		$_ =~ s/\r\n/\n/s; # convert windows to unix line endings, if necessary
 		chomp;
 		next if ($_ =~ /^\s+$/ || length $_ < 2);
 		my $wildcard_kw = qq("%$_%");
