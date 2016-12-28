@@ -95,7 +95,8 @@ config file = $config_filename
     open (INPUT, $datafile)  or die "can't input file $datafile\n$!\n";
     while (<INPUT>)
     {
-   		chomp;
+   		$_ =~ s/\r\n/\n/s; # convert windows to unix line endings, if necessary
+		chomp;
    		next if $_ =~ /^\s*$/;	# ignore blank lines
    		next if $_ =~ /^#/;	    # ignore comments
    		next if $_ =~ /^genome/;	# ignore header line
