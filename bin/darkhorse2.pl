@@ -284,7 +284,7 @@ Input parameters:
 	
 	if ($missing_lineage_count < 1)
 	{
-		print STDERR "Warning: didn't find any id numbers for missing lineages\n";
+		#print STDERR "Warning: didn't find any id numbers for missing lineages\n";
 	}
 
 	if ($debug ==1)
@@ -1138,7 +1138,7 @@ sub get_exclude_terms
 		chomp $line;
 				
 	# decide if it is a number or a name
-		if ($line =~ /^[\d]+$/)
+		if ($line =~ /^[-\d]+$/)
 		{
 			$exclude_type = "number";
 		}
