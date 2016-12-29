@@ -1416,14 +1416,20 @@ sub check_errs
 		my $lineage = $fields[14];
 		foreach my $key (keys %exclude_terms)
 		{
-			if ($species_name =~ /$key/ 
-				|| $tax_id =~ /^$key$/ 
-				#|| $lineage =~ /$key/	# this may have unintended consequences
-				)
+			if (($exclude_terms{$key} eq "name")
+			&& ($species_name =~ /$key/))
 			{
 				print STDERR  "Error: found self-term $key for query $fields[0]\n";
 				print LOGFILE "Error: found self-term $key for query $fields[0]\n";
 				last;
+			}
+			elsif (($exclude_terms{$key} eq "number"
+			&& ($tax_id == $key))
+			)
+			{
+				print STDERR  "Error: found self-tax-id $key for query $fields[0]\n";
+ 				print LOGFILE "Error: found self-tax_id $key for query $fields[0]\n";
+ 				last;
 			}
 		}
 	}	
