@@ -1240,29 +1240,6 @@ sub new_query {
   return($self)
 }
 
-sub add_alt_id_keys
-{
-	my ($hashref) = @_;
-	my %hash = %$hashref;
-	
-	foreach (keys %hash)
-	{
-		my @subterms = split /\|/, $_;
-		my $full_id = $_;
-		my $gi_num = $subterms[1];
-		my $alt_id = $subterms[3];
-		if (defined $gi_num)
-		{
-			$hash{$gi_num} = $hash{$full_id};
-		}
-		if (defined $alt_id)
-		{
-			$hash{$alt_id} = $hash{$full_id};
-		}	
-	}	
-	return %hash;
-}
-
 sub count_lines
 {
 	my ($filename) = @_;
