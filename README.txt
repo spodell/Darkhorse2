@@ -204,6 +204,11 @@ USAGE INSTRUCTIONS
                 matches containing any of these terms in are discarded. Used to exclude
                 uninformative sequences (e.g. "contaminant") and/or matches to "self",
                 defined at desired level of granularity (e.g. strain, species, or genus).
+		An optional script has been provided to assist users in creating exclusion 
+		lists for species that have been assigned multiple taxonomy ids in 
+		the NCBI database:
+	
+	    		Darkhorse2/bin/accessory_scripts/generate_dh_self_keywords.pl
                        
           Optional parameters:
           
@@ -225,7 +230,7 @@ USAGE INSTRUCTIONS
                 informative matches. For metagenomic studies, users willing to accept
                 reduced specificity may want to try lowering this value to boost
                 sensitivity.
-           
+     
      C. Supplementing a previously installed MySQL database 
     	
         Installed DarkHorse databases can be supplemented with additional sequences, 
