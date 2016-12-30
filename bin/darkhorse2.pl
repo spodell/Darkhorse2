@@ -324,7 +324,6 @@ Input parameters:
 	}
 	
 	$table_name = "db_seq_ids";
-	#$table_name = "lineage_index";
 	$firstline = "SELECT full_id, ncbi_tax_id, species_name FROM $table_name where full_id in (";	
 	
 # check to see if match_info species table already exists. If not, create it
@@ -395,7 +394,6 @@ Input parameters:
 	
 	while (<INPUT>)
 	{
-		my ($match_gi, $match_alt_id);
 		chomp;
 		next if ($_ =~ /^\s*$/);
 	# get rid of extra spaces inserted by ncbi blast
@@ -404,40 +402,18 @@ Input parameters:
 		my @tmp = split "\t", $_;
 		my $query_id = $tmp[0];
 		my $match_id = $tmp[1];
-		next unless (defined $match_id && length $match_id >1);
-		my @match_subterms = split /\|/, $match_id;
-		if ($match_subterms[0] eq "gi")
-		{
-			$match_gi = $match_subterms[1];
-			$match_alt_id = $match_subterms[3];
-		}
-		else
-		{
-			$match_gi = "none";
-			$match_alt_id = "none";
-		}
-				
+		next unless (defined $match_id && length $match_id >1);						
 		unless (exists $self_ids{$match_id}
-			|| exists $missing_lineage_ids{$match_id}
-			|| exists $self_ids{$match_gi} 
-			|| exists $missing_lineage_ids{$match_gi} )	
+			|| exists $missing_lineage_ids{$match_id})	
 		{
 			print OUTPUT "$_\n";
 			$query_hit_tally{$query_id}++;
-		}	
-		if (exists $self_ids{$match_gi})
-		{
-			$self_exclusion_count++;
-		}
-		if (exists $missing_lineage_ids{$match_gi})
-		{
-			$missing_lineage_count++;
-		}	
+		}		
 	}		
 	close INPUT;
 	close OUTPUT;
 	
-	print STDERR "Removed $self_exclusion_count self matches and $missing_lineage_count missing lineage matches.\n";
+	#print STDERR "Removed $self_exclusion_count self matches and $missing_lineage_count missing lineage matches.\n";
  	print LOGFILE "\nRemoved $self_exclusion_count self matches and $missing_lineage_count missing lineage matches.\n";
 
  	my $t_finish_self_filter = new Benchmark;
