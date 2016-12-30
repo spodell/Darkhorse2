@@ -403,8 +403,6 @@ Input parameters:
 		
 		my @tmp = split "\t", $_;
 		my $query_id = $tmp[0];
-		my @query_subterms = split /\|/, $query_id;
-
 		my $match_id = $tmp[1];
 		next unless (defined $match_id && length $match_id >1);
 		my @match_subterms = split /\|/, $match_id;
