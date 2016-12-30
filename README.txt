@@ -131,8 +131,9 @@ INSTALLATION
     (e.g many hours). If more than 16GB of RAM are available at the time of program execution, 
     performance can be accelerated by adjusting the "max_lines_per_packet" parameter 
     in the configuration file. However, if this parameter is set too high, MySQL operations
-    will fail due to insufficient memory. Recommended settings are as follows, based on
-    total system memory:
+    will fail due to insufficient memory (typical error message is something like
+    DBD::mysql::db do failed: MySQL server has gone away.) Recommended settings, based on
+    total system memory, ar as follows:
     
     	16 GB RAM  [max_lines_per_packet]=4000  (default value)
     	32 GB RAM  [max_lines_per_packet]=8000
