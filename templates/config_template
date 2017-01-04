@@ -2,8 +2,8 @@
 
 [program_directory]=/usr/local/biotools/DarkHorse
 [genbank_nr_fasta_path]=/usr/local/ncbi_seqdata/nr
-[names.dmp_path]=/usr/local/ncbi_taxdata/names.dmp
-[nodes.dmp_path]=/usr/local/ncbi_taxdata/nodes.dmp
+[names_dmp_path]=/usr/local/ncbi_taxdata/names.dmp
+[nodes_dmp_path]=/usr/local/ncbi_taxdata/nodes.dmp
 [protid_taxid_dmp_path]=/usr/local/ncbi_seqdata/prot.accession2taxid
 
 [db_name]=Darkhorse2_01
