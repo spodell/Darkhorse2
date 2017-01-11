@@ -1,11 +1,13 @@
 # DarkHorse2 configuration template file
 
+# installation parameters
 [program_directory]=/usr/local/biotools/DarkHorse
 [genbank_nr_fasta_path]=/usr/local/ncbi_seqdata/nr
 [names_dmp_path]=/usr/local/ncbi_taxdata/names.dmp
 [nodes_dmp_path]=/usr/local/ncbi_taxdata/nodes.dmp
 [protid_taxid_dmp_path]=/usr/local/ncbi_seqdata/prot.accession2taxid
 
+# database access parameters
 [db_name]=Darkhorse2_01
 [db_program]=mysql
 [db_host]=localhost
