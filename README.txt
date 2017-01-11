@@ -172,7 +172,7 @@ USAGE INSTRUCTIONS
                               
         2. Run darkhorse.pl from the unix command line, e.g.
             
-            darkhorse.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
+            darkhorse2.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
                
             Output from the program will be written to a new directory, named
             using the following convention:
@@ -187,7 +187,7 @@ USAGE INSTRUCTIONS
         specified in the configuration file. File names should include complete
         paths, if not in current working directory.
         
-        Usage: ./darkhorse.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
+        Usage: ./darkhorse2.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
 
           Required parameters
             -c  <configuration file name>   
