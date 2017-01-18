@@ -14,6 +14,6 @@
 [db_user]=username
 [db_user_password]=your_password
 [max_lines_per_packet]=4000
-[min_lineage_terms]=3
+[min_lineage_terms]=1
 [min_align_coverage]=0.7
 
