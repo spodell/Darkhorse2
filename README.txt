@@ -1,5 +1,5 @@
 README.txt for DarkHorse version 2.0
-December 2016
+January 2017
 Author: Sheila Podell
 
 ----------------------------------------
@@ -59,9 +59,9 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
    reference database. Program performance depends primarily on MySQL database 
    access efficiency. A multi-processor CPU with at least 16 GB of RAM is recommended. 
      
-    DarkHorse is a command-line only program, and requires the Unix OS. 
-    It has been installed, tested, and run on multiple versions of Linux and 
-    Macintosh OS X platforms. Additional software pre-requisites include: 
+   DarkHorse is a command-line only program, and requires the Unix OS. 
+   It has been installed, tested, and run on multiple versions of Linux and 
+   Macintosh OS X platforms. Additional software pre-requisites include: 
     
         PERL version 5.8.1 or later, with the following modules installed 
         (http://www.cpan.org/):
@@ -114,36 +114,35 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
 ----------------------------------------
 INSTALLATION
        
-   Installation is performed using a script that tests availability
-    of pre-requisite programs and databases and creates a customized
-    configuration file, based on interactive user input. Optionally, a
-    template configuration file is provided (templates/config_template),
-    which can be manually edited and specified as an additional command 
-    line parameter to the installation program:
-       
-        ./install_darkhorse2.pl  -p program_directory_path 
-            
-            OR
-            
-         ./install_darkhorse2.pl  -p program_directory_path -c config_filename    
-    
-    Note that the installation script may take a substantial amount of time to run 
-    (e.g many hours). If more than 16GB of RAM are available at the time of program execution, 
-    performance can be accelerated by adjusting the "max_lines_per_packet" parameter 
-    in the configuration file. However, if this parameter is set too high, MySQL operations
-    will fail due to insufficient memory (typical error message is something like
-    DBD::mysql::db do failed: MySQL server has gone away.) Recommended settings, based on
-    total system memory, ar as follows:
+   Installation is performed using a script that tests availability of
+   pre-requisite programs and databases based on a user-customized configuration
+   file. A template configuration file is provided (templates/config_template), 
+   which must be manually edited to include appropriate local information, 
+   including paths to downloaded files, MySQL database name, MySQL user name,
+   and MySQL user password. 
+   
+   If more than 16GB of RAM are available at the time of program execution,
+   performance can be accelerated by increasing the "max_lines_per_packet"
+   parameter in the configuration file. However, if this parameter is set too
+   high, MySQL operations will fail due to insufficient memory (typical error
+   message is something like DBD::mysql::db do failed: MySQL server has gone
+   away.) Recommended settings, based on total system memory, are as follows:
     
     	16 GB RAM  [max_lines_per_packet]=4000  (default value)
     	32 GB RAM  [max_lines_per_packet]=8000
     	64 GB RAM  [max_lines_per_packet]=16000
+   
+   The user-edited version of the configuration file is passed as a command 
+   line parameter to the installation program:
+            
+         ./install_darkhorse2.pl  -p program_directory_path -c config_filename    
     	
-   In addition to creating and populating required MySQL tables, the installation script produces
-   a new configuration file (if none was specified on the command line), a log file containing 
-   detailed notes on any errors that may have occurred, and new fasta formatted sequence file
-   of taxonomically informative sequences. The taxonomically informative fasta file will be 
-   named using the following convention:
+   Note that the installation script may take a substantial amount of time to
+   run (e.g many hours). In addition to creating and populating required MySQL
+   tables, the installation script produces a log file containing detailed
+   notes on any errors that may have occurred, and new fasta formatted
+   sequence file of taxonomically informative sequences. The taxonomically
+   informative fasta file will be named using the following convention:
             
                 databasename_informative_ref_seqs.fasta    
    
