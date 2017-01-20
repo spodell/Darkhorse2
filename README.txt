@@ -126,7 +126,8 @@ INSTALLATION
    parameter in the configuration file. However, if this parameter is set too
    high, MySQL operations will fail due to insufficient memory (typical error
    message is something like DBD::mysql::db do failed: MySQL server has gone
-   away.) Recommended settings, based on total system memory, are as follows:
+   away.) Suggested settings based on total system memory (with no programs 
+   other than DarkHorse being run concurrently), are as follows:
     
     	16 GB RAM  [max_lines_per_packet]=4000  (default value)
     	32 GB RAM  [max_lines_per_packet]=8000
@@ -135,7 +136,7 @@ INSTALLATION
    The user-edited version of the configuration file is passed as a command 
    line parameter to the installation program:
             
-         ./install_darkhorse2.pl  -p program_directory_path -c config_filename    
+         ./install_darkhorse2.pl -c config_filename    
     	
    Note that the installation script may take a substantial amount of time to
    run (e.g many hours). In addition to creating and populating required MySQL
@@ -144,7 +145,7 @@ INSTALLATION
    sequence file of taxonomically informative sequences. The taxonomically
    informative fasta file will be named using the following convention:
             
-                databasename_informative_ref_seqs.fasta    
+         databasename_informative_ref_seqs.fasta    
    
    Users will need to format this file of protein sequences as a reference database for subsequent 
    blastp searches using Diamond or NCBI-blast software. 
@@ -161,10 +162,10 @@ USAGE INSTRUCTIONS
           binning or highly fragmented draft sequences, a less stringent e-value,
           (e.g. 1e-3) may improve sensitivity.
             
-            Example Diamond BLASTP parameters:
-            	diamond makedb --in dh2_informative.fasta -d dh2_informative --threads 2
-            	diamond blastp -d dh2_informative.dmnd -q genome.faa -a genome_dh2.daa -e 1e-5 -t . --max-target-seqs 100 -p 4
-            	diamond view -a genome_dh2.daa -f tab  -o genome_dh2.m8          
+          Example Diamond BLASTP parameters:
+             diamond makedb --in dh2_informative.fasta -d dh2_informative --threads 2
+             diamond blastp -d dh2_informative.dmnd -q genome.faa -a genome_dh2.daa -e 1e-5 -t . --max-target-seqs 100 -p 4
+             diamond view -a genome_dh2.daa -f tab  -o genome_dh2.m8          
                                             
           Don't forget - if you update your DarkHorse database version, you must also 
           update the informative fasta sequences used in the blast search.                                         
