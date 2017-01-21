@@ -4,7 +4,7 @@
 # January 25, 2016
 
 # Based on recursive SQL queries to NCBI taxdump names and nodes files,
-# tries to lists of tax id's for DarkHorse self-exclusion lists 
+# creates lists of tax id's for DarkHorse self-exclusion lists 
 # reports at genus, species and strain level taxonomic granularity
 
 # Takes as input a tab-delimited list of genome sequences with the following fields:
@@ -15,17 +15,27 @@
 	# Note: NCBI database sometimes contains multiple redundant taxonomy ids and/or names 
 	# associated with the exact same genus, species or strain.
 
-# results go to STDOUT in tab delimited format with the following fields:
-	# input_genome_name 
-	# primary_tax_id 
-	# NCBI_species name 
-	# genus_self_terms (comma delimited list) 
-	# species_self_terms (comma delimited list) 
-	# strain_self_terms (comma delimited list) 
+# results go to new directory
+	# logfile
+	# tab delimited format with the following fields:
+		# input_genome_name 
+		# primary_tax_id 
+		# NCBI_species name 
+		# genus_self_terms (comma delimited list) 
+		# species_self_terms (comma delimited list) 
+		# strain_self_terms (comma delimited list) 
+	# new directory for each genome entered, containing three files:
+		# exclude_list_genus
+		# exclude_list_species (all sister species from same genus)
+		# exclude_list_strain (all sister strains from same species)
+		# exclude_list (primary tax id only)
 
 use warnings;
 use strict;
 use Getopt::Long;
+use Cwd;
+use File::Basename;
+use File::Spec;
 use DBI;
 
 # get command line arguments
@@ -76,16 +86,28 @@ use DBI;
 	my @row = ();
 	my $element;
 	
+# convert relative paths to absolute 
+	my ($input_file, $input_dir) = fileparse($datafile);
+	$input_dir = File::Spec->rel2abs($input_dir);
+	
+# set up a working directory, move there
+	my $result_dir = "dh_keywords"."_"."$$";
+	mkdir $result_dir, 0755 or warn "Cannot make results directory $result_dir\n: $!";
+	
 # open a logfile, put STDERR comments there too.
 	my $logfilename = "$$"."_logfile";
 	my $date = `date`;
 	chomp $date;
-	open (LOGFILE, ">$logfilename") or die "can't open log file $logfilename\n $!\n";
+	open (LOGFILE, ">$result_dir/$logfilename") or die "can't open log file $logfilename\n $!\n";
 	print LOGFILE qq($date
 $0
 input file = $datafile
 config file = $config_filename 
 );
+
+# open a tab output file
+	my $tabfilename = "$$"."_smry.tab";
+	open (TABOUT, ">$result_dir/$tabfilename") or die "  can't open summary tab outfile $tabfilename\n $!\n"; 
 	
 # get list of input names, create genome objects
 	my @genome_list = ();		# original user entry order
@@ -170,7 +192,7 @@ config file = $config_filename
 	my @col_headers = ("genome_name", "primary_tax_id", "ncbi_name", 
 			"genus_list", "species_list", "strain_list");
 	my $headers = join "\t", @col_headers;
-	print "$headers\n";
+	print TABOUT "$headers\n";
  
 # get tax_id and name info from SQL databases 
 foreach my $genome_name (@genome_list)
@@ -188,11 +210,11 @@ foreach my $genome_name (@genome_list)
 	unless (defined $primary_tax_id && $primary_tax_id > 0)
 	{
 		if ($debug) {print STDERR "\nSearching for tax id, $genome_name\n";}
-		$primary_tax_id = &get_primary_id($genome_name);
+		#$primary_tax_id = &get_primary_id($genome_name);
 		unless (defined $primary_tax_id && $primary_tax_id > 0) 
 		{
-			print STDERR "  WARNING: no primary tax_id found for $genome_name";
-			print LOGFILE "  WARNING: no primary tax_id found for $genome_name";
+			print STDERR "  WARNING: no primary tax_id found for $genome_name\n";
+			print LOGFILE "  WARNING: no primary tax_id found for $genome_name\n";
 			$primary_tax_id = 0;
 			next;
 		}
@@ -205,20 +227,19 @@ foreach my $genome_name (@genome_list)
 		$counter = 0;
 		$current_id = $primary_tax_id;
 		
-		while ($counter < 4)
+		while ($counter < 5)  # not going past genus level, so don't need more recursion to get to genus
 		{				
 			$counter++;
 			
 			my $result_ref = &get_tax_id_rank($current_id);
 			my @result = @$result_ref;
-			
+				
 			my $new_rank =  $result[0];
 			my $new_name =  $result[1];
 			my $new_name_class =  $result[2];
-			
-			# remove weird characters from name?
-			
-					
+						
+			if ($debug) {print STDERR "current_id=$current_id, new_rank=$new_rank, new_name=$new_name, new_name_class=$new_name_class\n";}
+										
 			if (defined $new_rank && length $new_name > 3
 				&& defined $new_rank && length $new_rank >3)
 			{
@@ -227,23 +248,24 @@ foreach my $genome_name (@genome_list)
 			}
 			else 			
 			{
-				if ($debug) {print STDERR "  ERROR: undefined name/rank,input #$num_analyzed, $genome_name\n";}
-				print LOGFILE "  ERROR: undefined name/rank, input #$num_analyzed, $genome_name\n";
-				last;
+				if ($debug) {print STDERR "  WARNING: undefined name/rank for query # $counter, $genome_name\n";}
+				print LOGFILE "  WARNING: undefined name/rank, input #$num_analyzed, $genome_name\n";
+				#last;
 			}
 							
 			if ($rank eq "no rank" || $rank eq "subspecies"
-			&& scalar @{$genome_obj->{subspecies}} < 2)
+			&& scalar @{$genome_obj->{strain}} < 2)
 			{
-				push @{$genome_obj->{subspecies_list}}, $current_id;
 				$genome_obj->{strain_name} = $current_name;
-				$genome_obj->{strain_id} = $current_id;			
+				$genome_obj->{strain_id} = $current_id;
+				my $primary_species_id = &get_parent_tax_id($current_id);
+				$genome_obj->{primary_species_id} = $primary_species_id;
+						
 			}
-			if ($rank eq "species")
+			if ($rank eq "species")  
 			{
-				push @{$genome_obj->{species_list}}, $current_id; 
 				$genome_obj->{species_name} = $current_name;
-				$genome_obj->{species_id} = $current_id;	
+				$genome_obj->{species_id} = $current_id;
 			}
 			if ($rank eq "genus")
 			{
@@ -261,8 +283,8 @@ foreach my $genome_name (@genome_list)
 			if ($counter == 1)
 			{
 				if ($debug) {print STDERR "Analyzing primary id $current_id for $genome_name\n";}
-				print LOGFILE "Analyzing primary id $current_id for $genome_name\n";
-				#$genome_obj->{ncbi_name} = $current_name;
+				print LOGFILE "\n###################\nAnalyzing primary id $current_id for $genome_name\n";
+				$genome_obj->{ncbi_scientific_name} = $current_name;
 			}
 					
 			last if ($genome_name =~ /uncultured/ || $genome_name =~ /unidentified/
@@ -278,7 +300,7 @@ foreach my $genome_name (@genome_list)
 				print STDERR "\t$num_analyzed genomes analyzed so far.\n";
 				print LOGFILE "## $num_analyzed genomes analyzed so far.\n";
 		}
-		&write_output($genome_name);
+		&write_tab_output($genome_name);
 		
 	}
 	else 
@@ -292,6 +314,8 @@ foreach my $genome_name (@genome_list)
 print STDERR "  Finished analyzing $num_analyzed genomes\n";
 $date = `date`;
 print LOGFILE "  Finished analyzing $num_analyzed genomes\n$date\n";
+close LOGFILE;
+close TABOUT;
 
 ################################################
 # SUBROUTINES
@@ -423,6 +447,7 @@ sub get_tax_id_rank
 	my ($tax_id) = @_;
 	my $current_rank;
 	my $current_name;
+	my $current_name_class;
 	$sql = "select rank, name_txt, name_class
 	from names, nodes
 	where names.tax_id = nodes.tax_id
@@ -435,15 +460,17 @@ sub get_tax_id_rank
 			or dieStackTrace("Cannot execute SELECT '$sql':\n<b>$DBI::errstr</b>");
 
 		@row = ();
+		
 		while (@row = $sth->fetchrow_array)
 		{
-			next if $row[0] =~ /rank/;	#don't include SQL header
+			next if $row[0] =~ /name_txt/;	#don't include SQL header
 			next if $row[2] =~ /type\smaterial/;
 			$current_rank = "$row[0]";
 			$current_name = "$row[1]";
+			$current_name_class = "$row[2]";
 			last if ("$row[2]" eq "scientific name");
 		}
-		my @out_array = ($current_rank,$current_name);
+		my @out_array = ($current_rank,$current_name,$current_name_class);
 		my $out_ref = \@out_array;	
 		return $out_ref;	 
 	}
@@ -500,13 +527,13 @@ if ($debug) {print STDERR "\n$sql\n";}
 		return \@sibs_list;
 }
 
-sub write_output
+sub write_tab_output
 {
 	my ($key) = @_;
-	my ($genus_list, $species_list, $strain_list);
+	my ($genus_list, $species_list, $strain_list, $primary_list);
 		my $genome_name = $genome_objects{$key}->{genome_name};
 		my $primary_tax_id = $genome_objects{$key}->{primary_tax_id};
-		my $ncbi_name = $genome_objects{$key}->{ncbi_name} || "not found";
+		my $ncbi_name = $genome_objects{$key}->{ncbi_scientific_name} || "not found";
 		
 		my @genus_array = @{$genome_objects{$key}->{genus_list}};
 		my @species_array = @{$genome_objects{$key}->{species_list}};
@@ -548,17 +575,96 @@ sub write_output
 			print LOGFILE "    $num_sibs species sibs for $genome_name\n";
 		}
 		print LOGFILE "\n";
-	# remove internal replicates from arrays?		
+				
+	# double check for duplicates in species array
+		my %uniq_species_hash = ();
+		my @uniq_species_array = ();
+		foreach my $next_species (@species_array)
+		{
+			$uniq_species_hash{$next_species}++;
+			next if ($uniq_species_hash{$next_species}) > 1;
+			push @uniq_species_array, $next_species;
+		}
+		@species_array = @uniq_species_array;	
+	
+	# write results to tabfile		
 		$genus_list = join ",", @genus_array;
 		$species_list = join ",", @species_array;
 		$strain_list = join ",", @strain_array;
+		$primary_list = $primary_tax_id;
+
 			
 		my @attributes = ($genome_name, $primary_tax_id, $ncbi_name, 
 			$genus_list, $species_list, $strain_list); 
 		
 		my $printstring = join "\t", @attributes;
-		print  "$printstring\n";	
+		print TABOUT "$printstring\n";	
+	
+	# write results to darkhorse exclude files
+		&write_file_output($genome_name,$genus_list,$species_list,$strain_list,$primary_list);	
 	}
+	
+sub write_file_output
+{
+	my ($genome_name, $genus_list, $species_list, $strain_list, $primary_list) = @_;
+
+# get rid of inconvenient punctuation in genome name
+		$genome_name =~ s/ /_/g; 
+		$genome_name =~ s/\'//g;
+		$genome_name =~ s/\\//g;
+		$genome_name =~ s/\;/,/g;
+		$genome_name =~ s/\"//g;
+				
+# create subdirectory for genome results files
+	my $genome_dirname = "$result_dir/$genome_name"."_exclude_lists";
+	mkdir $genome_dirname, 0755 or warn "Cannot make genome subdirectory $genome_dirname\n: $!";
+		 
+# write results to file in genome subdirectory
+		$genus_list =~ s/,/\n/g;
+		$species_list =~ s/,/\n/g;
+		$strain_list =~ s/,/\n/g;
+		$primary_list =~ s/,/\n/g;
+		
+		my $genus_filename = "$genome_name"."_exclude_list_genus";
+		my $species_filename = "$genome_name"."_exclude_list_species";
+		my $strain_filename = "$genome_name"."_exclude_list_strain";
+		my $primary_filename = "$genome_name"."_exclude_list";
+		my @default_terms = (
+				"cloning",
+				"vector",
+				"plasmid",
+				"cosmid",
+				"expression",
+				"environmental",
+				"synthetic",
+				"construct",
+				"contaminant",
+				"unclassified",
+				"unidentified",
+				"unknown",
+				"untyped",
+				"unspecified",
+				"clone");
+		my $default_list = join "\n", @default_terms;
+			
+	open (GENUS, ">$genome_dirname/$genus_filename") or die "can't open exclude file $genus_filename\n $!\n";
+		print GENUS "$genus_list\n"."$default_list";
+	close GENUS;
+	
+	open (SPECIES, ">$genome_dirname/$species_filename") or die "can't open exclude file $species_filename\n $!\n";
+		print SPECIES "$species_list\n"."$default_list";
+	close SPECIES;
+	
+	open (STRAIN, ">$genome_dirname/$strain_filename") or die "can't open exclude file $strain_filename\n $!\n";
+		print STRAIN "$strain_list\n"."$default_list";
+	close STRAIN;
+	
+	open (PRIMARY, ">$genome_dirname/$primary_filename") or die "can't open exclude file $primary_filename\n $!\n";
+		print PRIMARY "$primary_list\n"."$default_list";
+	close PRIMARY;
+
+}
+
 
 
 __END__
@@ -591,39 +697,42 @@ mysql> select distinct name_class from names;
 18 rows in set (1.87 sec)
 
 
+#see https://en.wikipedia.org/wiki/Taxonomic_rank for hierarchy of names
+# different disciplines (e.g. botany, zoology) use different subsets of names
+
 mysql> select distinct rank from nodes;
 +------------------+
 | rank             |
 +------------------+
 | no rank          |
-| superkingdom     |
-| genus            |
-| species          |
-| order            |
-| family           |
-| subspecies       |
-| subfamily        |
-| tribe            |
-| phylum           |
-| class            |
 | forma            |
-| suborder         |
-| superclass       |
-| subclass         |
 | varietas         |
-| kingdom          |
-| subphylum        |
-| superfamily      |
-| infraorder       |
-| infraclass       |
-| superorder       |
-| subgenus         |
-| parvorder        |
-| superphylum      |
-| species group    |
+| subspecies       |
 | species subgroup |
+| species          |
+| species group    |
+| subgenus         |
+| genus            |
 | subtribe         |
+| tribe            |
+| subfamily        |
+| family           |
+| superfamily      |
+| parvorder        |
+| infraorder       |
+| suborder         |
+| order            |
+| superorder       |
+| infraclass       |
+| subclass         |
+| class            |
+| superclass       |
+| subphylum        |
+| phylum           |
+| superphylum      |
 | subkingdom       |
+| kingdom          |
+| superkingdom     |
 +------------------+
 29 rows in set (0.68 sec)
 
