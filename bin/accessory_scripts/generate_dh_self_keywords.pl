@@ -576,7 +576,20 @@ sub write_tab_output
 		}
 		print LOGFILE "\n";
 				
-	# double check for duplicates in species array
+	
+	# get rid of duplicates in strain array
+		 my %uniq_strain_hash = ();
+		my @uniq_strain_array = ();
+		foreach my $next_strain (@strain_array)
+		{
+			$uniq_strain_hash{$next_strain}++;
+			next if ($uniq_strain_hash{$next_strain}) > 1;
+			push @uniq_strain_array, $next_strain;
+		}
+		@strain_array = sort {$a <=> $b} @uniq_strain_array;
+		
+	# species needs to be combination of species + strain ids (duplicates removed)
+		@species_array = (@species_array, @strain_array);
 		my %uniq_species_hash = ();
 		my @uniq_species_array = ();
 		foreach my $next_species (@species_array)
@@ -585,8 +598,8 @@ sub write_tab_output
 			next if ($uniq_species_hash{$next_species}) > 1;
 			push @uniq_species_array, $next_species;
 		}
-		@species_array = @uniq_species_array;	
-	
+		@species_array = sort {$a <=> $b} @uniq_species_array;
+		
 	# write results to tabfile		
 		$genus_list = join ",", @genus_array;
 		$species_list = join ",", @species_array;
@@ -607,6 +620,7 @@ sub write_tab_output
 sub write_file_output
 {
 	my ($genome_name, $genus_list, $species_list, $strain_list, $primary_list) = @_;
+		
 
 # get rid of inconvenient punctuation in genome name
 		$genome_name =~ s/ /_/g; 
