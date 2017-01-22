@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 # install_darkhorse2.pl 
 # Sheila Podell 
-# December 22, 2016
+# January 20, 2016
 
 # Tests availability of essential pre-requisites for running DarkHorse
-# Generates customized DarkHorse config file based on template and user input
 # Automates process of installing MySQL databases required to run DarkHorse
 # Generates customized reference protein fasta file to be used in blast (diamond) searches
 
@@ -21,7 +20,7 @@ use DBI;
     my ($db, $sth, $sql, $overwrite, $update, $result);
     my ($table_name, $firstline, $datafile);
     my $config_template = "templates/config_template";
-    my $config_filename = "$config_template";
+    my $config_filename = "";
     my $user_message = "";
     my $cmd = "";
     my $debug = 0;
@@ -29,42 +28,31 @@ use DBI;
     
     my $USAGE;
 	my $message = qq(
-  Usage: $0  -p program directory path 
+  Usage: $0 -c configuration file
   Optional parameters: 
-    -c configuration file
-    -i input data directory
     -o allow database overwrites
     -u allow database updates)."\n\n";
     
 	GetOptions( 
-			    "p=s" => \$program_directory,
-			    "i=s" => \$input_directory,
-			    "c=s" => \$config_filename,   # pre-existing or manually edited file
+			    "c=s" => \$config_filename,   # pre-existing, manually edited file
+			    "i=s" => \$input_directory,   # to continue partially finished install
 			    'o'   => \$overwrite,		
 			    'u'   => \$update,
 			    "n=i" => \$num_cpu,
 			    "d=i" => \$debug,
 				);
-	 &check_args();
-
-# Get default parameters from template, then generate customized config file based on user input    
-    my %config_params = &read_config_file("$program_directory/$config_template");
-    my $new_filename = &new_filename();
-    if ($config_filename ne "$config_template" && -s "$program_directory/$config_filename")
-    {
-        print "  Using config file $config_filename\n";
-    }     
-    else
-    {
-        print "  Creating customized configuration file: $new_filename\n";
-        $config_params{program_directory} = $program_directory;
-        &write_config_file(\%config_params, $new_filename);
-        $config_filename = $new_filename;
-    }
-  # revise parameters interactively if necessary
-     %config_params= &read_config_file($config_filename);
+	if($USAGE || !$config_filename) 
+	{
+		print STDERR $message;
+		exit(0);
+	} 
+  
+# check configuration file
+     my %config_params= &read_config_file($config_filename);
      &user_input(\%config_params);
-     
+     $program_directory = $config_params{program_directory};
+     &check_args();
+    
 # set performance monitoring variables
 	my ($date, $subroutine_multiply_factor, $est_time_mins, $est_time_hours, $text_with_commas); 
     my $sql_time_factor = ($config_params{max_lines_per_packet})/2000;	
@@ -78,7 +66,7 @@ use DBI;
 	my $logfile = "darkhorse_install_"."$$".".log";
 	open (LOGFILE, ">$logfile") or die "couldn't open logfile $logfile for writing, $!\n";	
 	print LOGFILE qq(###################################################
-  Darkhorse version 2.0 (beta) installation logfile
+  Darkhorse version 2 installation logfile
 ###################################################
 
 Installation settings: 
@@ -493,7 +481,7 @@ sub send_message
 	
 sub check_args
 {
- 	if($USAGE || !$program_directory) 
+ 	if($USAGE || !$config_filename) 
 	{
 		print STDERR $message;
 		exit(0);
@@ -503,12 +491,8 @@ sub check_args
 		print STDERR "  Couldn't find program directory $program_directory \n";
 		exit(0);
 	}
-	unless (-s "$program_directory/$config_template")
-	{
-		print STDERR "  Couldn't find config template $program_directory/$config_template \n";
-		exit(0);		
-	}
-	# check for required program files
+
+	# check for required program execution files
         my @program_list = (
                             "load_taxonomy_names.pl",
                             "load_taxonomy_nodes.pl",
@@ -529,7 +513,7 @@ sub check_args
            my $program =  "$program_directory/bin/installation_scripts/$_";
             unless (-s $program && -x $program)
             {
-                print STDERR "Couldn't find program $_\n";
+                print STDERR "Couldn't find program $_\ in $program_directory/bin/installation_scripts/";
                 exit (0);
             }         
          }
@@ -587,73 +571,28 @@ sub write_config_file
 	close CONFIG;
 }
 
-sub new_filename
-{
-    my $newname = "";
-    # don't overwrite old file
-        if (-s "$program_directory/darkhorse.cfg")
-        {	    
-            `cp $program_directory/darkhorse.cfg $program_directory/darkhorse_old.cfg`;	
-        }
-	
-	# put a unique, sequential number on the new filename
-        my $basename = "darkhorse";
-        my $counter = 1;
-        do{
-            $newname = "$basename$counter".".cfg";
-            $counter++;
-        }while (-s "$program_directory/$newname" );
-        
-	return $newname;
-}	
-	
 sub user_input
 {    
-    my $changes = 0;
-   
     # confirm location of non-executable file paths    
         my @file_list = ( "genbank_nr_fasta_path",
                           "names_dmp_path",
                           "nodes_dmp_path",
                           "protid_taxid_dmp_path",
                          );
-        print "\n  Please enter corrected location for the following paths, if required\n";
         foreach (@file_list)
         {
             my $path = $config_params{$_};
             $path = " " unless (defined $path);
-            
-            print "  $_ ($path): \n";
-            my $tmp = <STDIN>;
-            chomp $tmp;
-            if (length $tmp>1)
-            {
-                $config_params{$_} = $tmp;
-                $changes++;
-            }
             unless (-s "$config_params{$_}")
             {
                 print  "  Can't find $_ in specified location:\n  $config_params{$_}\n";
                 print  "  DarkHorse configuration cannot be completed without this file.\n";
-                unlink "$program_directory/$new_filename";
                 exit (0);      
             }        
         }
 
     # confirm mysql connection host, username, password, and database
         my @db_params = ("db_name","db_host","db_user","db_user_password");
-        print "  Please enter corrected connection information for MySQL database, if necessary.\n";        
-        foreach (@db_params)
-        {           
-            print "  $_ ($config_params{$_}):\n";
-            my $tmp = <STDIN>;
-            chomp $tmp;
-            if (length $tmp>1)
-            {
-                $config_params{$_} = $tmp;
-                $changes++;
-            }                   
-        }
         my $result = &check_db_connection(\%config_params);
         unless ($result ==1)
         {
@@ -682,11 +621,6 @@ sub user_input
         {
             print STDERR "Illegal value for min_align_coverage:($config_params{min_align_coverage}\n";
             exit(0);	
-        }
-        
-        if ($changes>0)
-        {
-            &write_config_file(\%config_params, $new_filename);
         }
 }
 
@@ -737,7 +671,6 @@ sub missing_file_msg
 {
        print  "  This program is required for DarkHorse configuration.\n";
                 print  qq(  It can be downloaded from ftp://ftp.ncbi.nih.gov/blast/)."\n";
-                unlink "$program_directory/$new_filename";
                 exit (0);
 }
 
@@ -836,11 +769,13 @@ open (OUTPUT, ">$outfile") or die "can't open temp file $outfile for writing\n $
 	my $db_user_password = $config_params{db_user_password};    
     my $db_path = "DBI:$db_program:$db_name:$db_host:";
     my $dbh = DBI->connect($db_path, $db_user, $db_user_password);
+    my $num_terms = $config_params{min_lineage_terms};
+    $num_terms = $num_terms -1;
 
 $sql  = qq (
 select ncbi_tax_id, species_name
 from precalc_lineages
-where num_terms > 2;		
+where num_terms > $num_terms;		
 );
 	$sth = $dbh->prepare($sql)
 		or dieStackTrace("Cannot prepare SELECT '$sql':\n<b>$DBI::errstr</b>");
@@ -1077,3 +1012,23 @@ sub drop_table
 
 
 __END__
+# sub new_filename
+# {
+#     my $newname = "";
+#     # don't overwrite old file
+#         if (-s "$program_directory/darkhorse.cfg")
+#         {	    
+#             `cp $program_directory/darkhorse.cfg $program_directory/darkhorse_old.cfg`;	
+#         }
+# 	
+# 	# put a unique, sequential number on the new filename
+#         my $basename = "darkhorse";
+#         my $counter = 1;
+#         do{
+#             $newname = "$basename$counter".".cfg";
+#             $counter++;
+#         }while (-s "$program_directory/$newname" );
+#         
+# 	return $newname;
+# }	
+	
