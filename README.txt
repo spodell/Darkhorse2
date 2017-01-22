@@ -168,9 +168,19 @@ USAGE INSTRUCTIONS
              diamond view -a genome_dh2.daa -f tab  -o genome_dh2.m8          
                                             
           Don't forget - if you update your DarkHorse database version, you must also 
-          update the informative fasta sequences used in the blast search.                                         
+          update the informative fasta sequences used in the blast search. 
+      
+       2. Create an exclude_list file to remove self-matches from blast search results,
+          if necessary. A template file is provided (templates/exclude_list_template),
+          which can be used as is for classification of metagenomic sequences. For HGT
+          analysis of individual genomes, an optional script has been provided to assist
+          users in creating exclusion lists at different levels of taxonomic granularity
+          (e.g. genes acquired since divergence from other strains, species, or genera
+          sharing common ancestors with the test genome).   
+	
+	    		Darkhorse2/bin/accessory_scripts/generate_dh_self_keywords.pl    	 	  
                               
-        2. Run darkhorse.pl from the unix command line, e.g.
+        3. Run darkhorse.pl from the unix command line, e.g.
             
             darkhorse2.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
                
