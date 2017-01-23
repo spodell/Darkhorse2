@@ -176,9 +176,11 @@ USAGE INSTRUCTIONS
           analysis of individual genomes, an optional script has been provided to assist
           users in creating exclusion lists at different levels of taxonomic granularity
           (e.g. genes acquired since divergence from other strains, species, or genera
-          sharing common ancestors with the test genome).   
+          sharing common ancestors with the test genome). However, these lists may need
+	  to be manually edited and adjusted in cases where taxonomy identification 
+	  numbers are duplicated or inconsistently applied in the NCBI taxonomy database.
 	
-	    		Darkhorse2/bin/accessory_scripts/generate_dh_self_keywords.pl    	 	  
+	    Darkhorse2/bin/accessory_scripts/generate_dh_self_keywords.pl    	 	  
                               
         3. Run darkhorse.pl from the unix command line, e.g.
             
