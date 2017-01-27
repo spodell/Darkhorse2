@@ -804,11 +804,11 @@ where num_terms > $num_terms;
 		next if $species_name =~ /synthetic/;
 		next if $species_name =~ /construct/;
 		next if $species_name =~ /contaminant/;
-		next if $species_name =~ /unclassified/;
-		next if $species_name =~ /unidentified/;
-		next if $species_name =~ /unknown/;
-		next if $species_name =~ /untyped/;
-		next if $species_name =~ /unspecified/;
+		#next if $species_name =~ /unclassified/;
+		#next if $species_name =~ /unidentified/;
+		#next if $species_name =~ /unknown/;
+		#next if $species_name =~ /untyped/;
+		#next if $species_name =~ /unspecified/;
 		print OUTPUT "$ncbi_tax_id\t$species_name\n";
 	}
 	$dbh->disconnect();
