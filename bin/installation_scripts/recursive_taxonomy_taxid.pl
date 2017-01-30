@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# recursive_taxonomy_v2.pl
+# recursive_taxonomy.pl
 # Sheila Podell
-# December 16, 2016
+# January 29, 2016
 
 # recursively parses Taxonomy database to get lineage for a species
 # takes as input, tab-delimited file containing list of tax_ids
@@ -60,11 +60,11 @@ use DBI;
 
 # set up output order for hierarchical keys - stop after genus
 	my @output_list = (
-		#"no rank",
 		"superkingdom",
 		"kingdom",
 		"superphylum",
 		"phylum",
+		"no rank",
 		"subphylum",
 		"superclass",
 		"class",
@@ -161,15 +161,19 @@ use DBI;
 			if (exists $output_order{$current_rank} || $current_name =~/Viruses/)
 			{
 				#get rid of non-informative names	
+					next if  $current_name =~ /unclassified .+/;
 					$current_name =~ s/unclassified//;
+					$current_name =~ s/ group//;
 					$current_name =~ s/\(miscellaneous\)//;
 					next if  $current_name =~ /candidate\s/;
+					next if  $current_name =~ /candidate\s/;
 					next if  $current_name =~ /\(class\)/;
-					next if  $current_name =~ /group/;
 					next if  $current_name =~ /subdivision/;
 					next if  $current_name =~ /subgen/;
 					next if  $current_name =~ /subg\./;
 					next if  $current_name =~ /Family/;
+					next if  $current_name =~ /cellular\sorganisms/;
+					
 				$lineage .= "$current_name;";
 			}												
 		}
@@ -222,7 +226,10 @@ sub nodes(){
 	$Tax{$recursion_count}=$parental_tax_id;	
 	
 # end recursion when get to root level ($recursion_max prevents runaway)
-	if($parental_tax_id == 1 || $recursion_count > $recursion_max)  
+	if ($parental_tax_id == 1
+		|| $parental_tax_id == 2   
+		|| $parental_tax_id == 2759 
+		|| $recursion_count > $recursion_max)  
 	{
 		$recursion_count = 0;
 		$sth2->finish();
