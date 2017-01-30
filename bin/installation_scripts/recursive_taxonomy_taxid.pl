@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# recursive_taxonomy.pl
+# recursive_taxonomy_v2.pl
 # Sheila Podell
-# January 29, 2016
+# December 16, 2016
 
 # recursively parses Taxonomy database to get lineage for a species
 # takes as input, tab-delimited file containing list of tax_ids
@@ -174,6 +174,7 @@ use DBI;
 					next if  $current_name =~ /Family/;
 					next if  $current_name =~ /cellular\sorganisms/;
 					
+					
 				$lineage .= "$current_name;";
 			}												
 		}
@@ -225,10 +226,16 @@ sub nodes(){
 	$parental_tax_id=$query2{parent_tax_id};
 	$Tax{$recursion_count}=$parental_tax_id;	
 	
-# end recursion when get to root level ($recursion_max prevents runaway)
+# end recursion when get to root level, or anything that has root as parent 
+# ($recursion_max prevents runaway)
+
 	if ($parental_tax_id == 1
-		|| $parental_tax_id == 2   
-		|| $parental_tax_id == 2759 
+		|| $parental_tax_id == 2   # Bacteria
+		|| $parental_tax_id == 10239  #Viruses
+		|| $parental_tax_id == 12884 # Viroids
+		|| $parental_tax_id == 12908 # unclassified sequences
+		|| $parental_tax_id == 28384  # other sequences
+		|| $parental_tax_id == 131567  # cellular organisms
 		|| $recursion_count > $recursion_max)  
 	{
 		$recursion_count = 0;
@@ -239,3 +246,31 @@ sub nodes(){
 }
 
 __END__
+
+mysql> select * from names where name_class = "scientific name" and tax_id in (1,10239,12884,12908,28384,131567);
++--------+--------+------------------------+-------------+-----------------+
+| id     | tax_id | name_txt               | unique_name | name_class      |
++--------+--------+------------------------+-------------+-----------------+
+|      2 |      1 | root                   |             | scientific name |
+|  36482 |  10239 | Viruses                |             | scientific name |
+|  40841 |  12884 | Viroids                |             | scientific name |
+|  40887 |  12908 | unclassified sequences |             | scientific name |
+|  47466 |  28384 | other sequences        |             | scientific name |
+| 241065 | 131567 | cellular organisms     |             | scientific name |
++--------+--------+------------------------+-------------+-----------------+
+6 rows in set (0.00 sec)
+
+
+select tax_id, parent_tax_id, rank from nodes where parent_tax_id = 1;
++--------+---------------+--------------+
+| tax_id | parent_tax_id | rank         |
++--------+---------------+--------------+
+|      1 |             1 | no rank      |
+|  10239 |             1 | superkingdom |
+|  12884 |             1 | superkingdom |
+|  12908 |             1 | no rank      |
+|  28384 |             1 | no rank      |
+| 131567 |             1 | no rank      |
++--------+---------------+--------------+
+6 rows in set (0.89 sec)
+
