@@ -6,21 +6,21 @@
 # Using DarkHorse2 database, measures taxonomic diversity of database representatives 
 # for a given taxonomic group 
 
-# does this by counting distinct terms immediately adjacent in lineage strings e.g.
+# does this by counting distinct terms immediately adjacent (to the right) in lineage strings e.g.
 	# Bacteria;Proteobacteria;Deltaproteobacteria;Syntrophobacterales;Syntrophaceae;Syntrophus
 	# Bacteria;Proteobacteria;Deltaproteobacteria;Myxococcales;Sorangiineae;Polyangiaceae;Chondromyces
 	# Bacteria;Planctomycetes;Planctomycetia;Planctomycetales;Planctomycetaceae
  
-# input: file containing list of query terms (one per line) from a lineage lineage string
+# input: file containing list of query terms (one per line) from a lineage string
 # example (don't use # sign before!):
 # 	Archaea
 #	Bacteria
-#   Proteobacteria
+#       Proteobacteria
 #	Deltaproteobacteria
 	
 # output: tab-delimited count for number of distinct terms found one position to the right
 # (direct descendent children of the test term, but not grandchildren, etc) 
-#   Archaea	    0
+#       Archaea	    0
 # 	Bacteria	2
 #	Proteobacteria	1
 #	Deltaproteobacteria	2
@@ -229,19 +229,6 @@ sub read_config_file
     return %dh_config;
 }
 
-sub new_term
-{
- my ($term) = @_;
-  my $self = {};
-  bless $self, $term;
-
-# Constructor attributes 
-	$self->{term} = "$term";
-	my %child_list = ();
-	$self->{child_list} = \%child_list;
-	
-   return($self)
-}
 
 	
 	
