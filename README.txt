@@ -114,7 +114,13 @@ INSTALLATION
        
    Installation is performed using a script that tests availability of
    pre-requisite programs and databases based on a user-customized configuration
-   file. A template configuration file is provided (templates/config_template), 
+   file. Note that some distributions may require program permissions to be
+   re-set as executable after decompressing the downloaded files, e.g.
+   
+   	tar -xzvf DarkHorse-2.0_revXX.tar.gz
+	chmod -R 755 DarkHorse-2.0_revXX
+   
+   A template configuration file is provided (templates/config_template), 
    which must be manually edited to include appropriate local information, 
    including paths to downloaded files, MySQL database name, MySQL user name,
    and MySQL user password. 
