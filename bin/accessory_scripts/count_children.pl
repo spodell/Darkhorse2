@@ -178,6 +178,7 @@ where num_terms > 1;
 					{
 						my $child_position = $lineage_position + 1;
 						my $child_name = $lineage_terms[$child_position];
+						next unless (defined $child_name);
 						$uniq_children{$child_name}++;
 						unless ($uniq_children{$child_name} >1)
 						{
