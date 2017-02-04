@@ -239,14 +239,15 @@ USAGE INSTRUCTIONS
                 tend to increase false positive HGT predictions for query sets with
                 abundant database relatives. 
             
-            -n  <minimum number lineage terms> [default = 3]
+            -n  <minimum number lineage terms> [default = 1]
                 Sets the minimum number of lineage terms required for a match to be
                 included in the taxonomy determination. For horizontal gene transfer
                 studies, setting this value lower than 3 is not recommended, because
                 it may cause matches with poorly characterized taxonomy to obscure more
-                informative matches. For metagenomic studies, users willing to accept
-                reduced specificity may want to try lowering this value to boost
-                sensitivity.
+                informative matches. However, the default value of 1 may work better if
+		the query itself is from a poorly-characterized, novel taxonomic group. 
+		For metagenomic studies, users willing to accept reduced specificity
+                may want to try lowering this value to boost sensitivity.
      
      C. Supplementing a previously installed MySQL database 
     	
