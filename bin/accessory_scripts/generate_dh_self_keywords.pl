@@ -121,7 +121,7 @@ config file = $config_filename
    		next if $_ =~ /^#/;	    # ignore comments
    		next if $_ =~ /^genome/;	# ignore header line
    		my @tmp = split "\t", $_; 		
-   		unless (scalar @tmp >0)
+   		unless (scalar @tmp == 2)
    		{
    			print STDERR "Input data error, line $.:\n$_\n";
    			print LOGFILE "Input data error, line $.:\n$_\n";
