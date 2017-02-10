@@ -60,13 +60,11 @@ use DBI;
 	unless (-s $datafile)
 	{
 		print STDERR "  Couldn't find source datafile $datafile \n";
-		print LOGFILE "  Couldn't find source datafile $datafile \n";
 		exit(0);
 	}	
 	unless (-s $config_filename)
 	{
 		print STDERR "  Couldn't find config file $config_filename \n";
-		print LOGFILE "  Couldn't find config file $config_filename \n";
 		exit(0);
 	}	
 
