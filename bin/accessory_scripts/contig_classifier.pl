@@ -57,7 +57,7 @@ use Getopt::Long;
         );
 
 # validate input
-	if($USAGE || !$dh_smry_filename || !$ctg_index_filename) 
+	if($USAGE || !$dh_smry_filename || !$ctg_index_filename || !$search_list_filename) 
     {
 		print STDERR "$message";
 		exit(0);
