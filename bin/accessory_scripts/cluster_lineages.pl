@@ -36,6 +36,14 @@ use Getopt::Long;
 		print STDERR "$message";
 		exit(0);
 	}
+	unless (defined $min_pct 
+		&& $min_pct =~ /[\d\.].+$/
+		&& $min_pct >0
+		&& $min_pct < 1 )
+	{
+		print STDERR "   ERROR: min_pct_matches must be a positive value between 0-1.";
+		exit(0);
+	}
 	
 #  get clusters
 	my %lineages = ();	# key = lineage name # value = object reference
