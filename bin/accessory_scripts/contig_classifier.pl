@@ -112,6 +112,7 @@ use Getopt::Long;
 	{
 		chomp;
 		next if ($_ =~ /^\s/);
+		next unless (defined $_ && length $_ >1);
 		$search_list{$_} = 0;
 		push @keywords, $_;
 	}
