@@ -76,24 +76,13 @@ use DBI;
 			exit(0);
 		}		
 	}
-		
-# create logfile to keep track of progress
-	# my $logfile = "darkhorse_update_"."$$".".log";
-# 	open (LOGFILE, ">$logfile") or die "couldn't open logfile $logfile for writing, $!\n";	
-# 	print LOGFILE qq(###################################################
-#   Darkhorse version 2.0 (beta) update logfile
-# ###################################################
-# 
-# Installation settings:
-# 	config filename = $config_filename
-# 	MySQL database name = $config_params{db_name}
-# 	max_lines_per_packet = $config_params{max_lines_per_packet} 
-# 
-# );
-
 
 # Get lineages and corresponding tax ids already in database (precalc_lineages table)
 	my %lineages = &get_precalc_lineages;	# key = lineage, value = tax_id
+	my @sorted_tax_ids = sort {$a <=> $b} values %lineages;
+	my $min_tax_id = $sorted_tax_ids[0];
+	print STDERR "  minimum tax_id in database $db_name is currently = $min_tax_id\n";
+
 
 # get protein information from fasta file, put into hash table
 	my $fastafile_size = &check_filesize($fastafile); # MB
@@ -115,7 +104,7 @@ use DBI;
 	my %species_lineage_index = (); # key = species name, value = lineage
 	my %name_count = ();
 	my %id_nums = ();	#key = id num # value # times seen (eliminate duplicates)	
-	my $fake_tax_id = 0;
+	my $fake_tax_id = $min_tax_id;
 	my ($current_tax_id, $num_lineage_terms);
 	my $num_bad = 0;
 	my $num_db_seq_ids_entries = 0;
@@ -147,7 +136,7 @@ use DBI;
 		my $current_name = $dataline[1];
 		my $current_lineage = $dataline[2];	
 	
-	# be sure the id number entry is not a duplicate
+	# be sure the id number entry is not an internal duplicate
 		$id_nums{$current_id_num}++;
 		if ($id_nums{$current_id_num} > 1)
 		{
@@ -244,8 +233,9 @@ use DBI;
 				$fake_tax_id = $current_tax_id;
 
 			# here, need to update precalc_lineages table with both name and lineage				
-				$msg = "    WARNING: Lineage not found in current database. Creating placeholder for tax_id = $fake_tax_id";
-				$msg .= "    $current_lineage";
+				$msg = "   WARNING: Lineage not found in current database.\n";
+				$msg .= "             Creating placeholder for tax_id = $fake_tax_id\n";
+				$msg .= "             $current_lineage\n";
 				&send_message($msg);
 						
 				my $tax_id = "$lineages{$current_lineage}";
