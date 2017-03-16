@@ -171,7 +171,7 @@ use DBI;
 		my $name_class = "$fields[3]";
 	
 	# first field blank to accomodate auto-increment	
-		$sql .= "('', '$tax_id', '$name_txt', '$unique_name', '$name_class'),\n";
+		$sql .= "('0', '$tax_id', '$name_txt', '$unique_name', '$name_class'),\n";
 	
 	# send insert statements in pieces to avoid exceeding MySql max_allowed_packet size	
 		if ($. % $lines_per_packet == 0)
