@@ -248,6 +248,13 @@ USAGE INSTRUCTIONS
 		the query itself is from a poorly-characterized, novel taxonomic group. 
 		For metagenomic studies, users willing to accept reduced specificity
                 may want to try lowering this value to boost sensitivity.
+		
+	   -b <blast filter> [default = off]
+	   	Values should be between 0-1 (Recommended 0.7). Sets the minimum alignment 
+		length for blast matches as a percentage of the query and match sequence
+		lengths (e.g. for a setting of 0.7, the blast alignment must cover at least
+		70% of both query and database match sequences). Slows performance significantly 
+		for large metagenomic data sets, but greatly improves accuracy.
      
      C. Supplementing a previously installed MySQL database 
     	
