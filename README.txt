@@ -239,14 +239,15 @@ USAGE INSTRUCTIONS
                 tend to increase false positive HGT predictions for query sets with
                 abundant database relatives. 
             
-            -n  <minimum number lineage terms> [default = 2]
+            -n  <minimum number lineage terms> [default = 3]
                 Sets the minimum number of lineage terms required for a match to be
                 included in the taxonomy determination. For horizontal gene transfer
                 studies, setting this value lower than 3 is not recommended, because
                 it may cause matches with poorly characterized taxonomy to obscure more
                 informative matches. For metagenomic studies, users willing to accept 
 		reduced specificity and phylum-level granularity for taxonomic assignment
-		may want to try lowering this value to boost sensitivity.
+		may want to try lowering this value to boost sensitivity, especially for
+		poorly characterized taxa with few database representatives.
 		
 	   -b <blast filter> [default = 0.7]
 	   	Values should be between 0-1 (Recommended 0.7). Sets the minimum alignment 
