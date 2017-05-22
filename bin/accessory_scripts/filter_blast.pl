@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # filter_blast.pl 
 # Sheila Podell 
-# July 19,2010
+# May 21, 2017
 
 # Takes as input 3 files:
 #	fasta query file used for blast
@@ -183,7 +183,8 @@ use File::Basename;
  		my $match_info = $match_lengths{$subject_id};
  		unless (defined $match_lengths{$subject_id})
  		{
- 			print STDERR "  WARNING: Blast match subject_id not found in darhorse database\n  $_\n"; 
+ 			#print STDERR "  WARNING: Blast match subject_id not found in darhorse database\n  $_\n";
+			next;
  		}
  		my ($ncbi_tax_id, $species_name, $match_len, $full_db_id) = split "\t", $match_info;	 		 		
 		my $query_len = $seqs{$query_id}->{seq_length};
