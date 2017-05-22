@@ -1,5 +1,5 @@
 README.txt for DarkHorse version 2.0
-January 2017
+May 2017
 Author: Sheila Podell
 
 ----------------------------------------
