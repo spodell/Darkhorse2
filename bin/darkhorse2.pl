@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# darkhorse2b.pl 
+# darkhorse2.pl 
 # Sheila Podell
-# December 23, 2016 
+# May 21, 2017 
 
 ##############################################
 # PURPOSE
@@ -67,8 +67,8 @@ use Benchmark;		# for timing code
 	my $filter_threshold = 0.1;	
 	my $logfilename = "$$"."_logfile";
 	my ($program_directory, $script_path, $db_name, $db_program, $db_host, $db_user, 
-		$db_user_password, $max_lines_per_packet, $min_lineage_terms,
-		$config_filename, $query_info_file, $match_info_file, $blast_filter);	
+		$db_user_password, $max_lines_per_packet, $min_lineage_terms, $min_aln_coverage,
+		$config_filename, $query_info_file, $match_info_file, $blast_filter);
 	my %query_list = (); # key = query_ID, value = object_ref 
 	my $debug = 0; # 0 = off 1 = on
 	my $genome_fasta = "";
@@ -93,7 +93,7 @@ use Benchmark;		# for timing code
 	-f  <filter threshold> [default = 0.1] 
 	-n  <minimum number lineage terms>
 	-d  <debug>
-	-b  <blast filter>
+	-b  <blast filter>  [default = 0.7]
 	-q  <query_info_file>
 	-m  m<atch_info_file>
 	
@@ -131,8 +131,8 @@ use Benchmark;		# for timing code
 	$db_host = $dh_config{db_host} || "not found";
 	$db_user = $dh_config{db_user} || "not found";
 	$db_user_password = $dh_config{db_user_password} || "not found";
-	$max_lines_per_packet = $dh_config{max_lines_per_packet} || "not found";	
-	
+	$max_lines_per_packet = $dh_config{max_lines_per_packet} || "not found";
+	$min_aln_coverage = $dh_config{min_align_coverage};	
 	unless (defined $min_lineage_terms)
 		{
 			$min_lineage_terms = $dh_config{min_lineage_terms} || "not found";
@@ -149,29 +149,44 @@ use Benchmark;		# for timing code
     
 # blast filter if necessary
    my $t_start_blast_filter = new Benchmark;
-    if (defined $blast_filter && $blast_filter >=0 && $blast_filter <= 1 )
+	# command line definition of blast filter should over-ride config file, if valid
+		unless (defined $blast_filter && $blast_filter >=0 && $blast_filter <= 1)
+		{
+			$blast_filter = $min_aln_coverage;				
+		}
+   # if config file had zero or bad value, skip filtering
+		unless (defined $blast_filter && $blast_filter >=0 && $blast_filter <= 1)
+		{
+			$blast_filter = 0;
+		}    
+    #if (defined $blast_filter && $blast_filter >=0 && $blast_filter <= 1 )
+    if ($blast_filter > 0)
     {
-        print STDERR "\nFiltering blast input\n";
-        my $pct_cutoff =$dh_config{min_align_coverage};
-        `$script_path/filter_blast.pl -q $genome_fasta -t $tab_input -c $config_filename -f $pct_cutoff`;
-      
-        my @suffixlist = ("faa", "fasta", "fsa", "m8", "blast", "filt60");
-        my $basename = fileparse($tab_input, @suffixlist);
-        my $extension = $pct_cutoff * 100;
-        my $blast_outfile = "$basename"."filt"."$extension";
-        my $query_outfile = "$blast_outfile"."_query_info";
-        my $match_outfile = "$blast_outfile"."_match_info";
-        $tab_input = $blast_outfile;
-        
-        unless (defined $query_info_file && -s $query_info_file)
-        {
-            $query_info_file = $query_outfile;
-        }
-        
-        unless (defined $match_info_file && -s $match_info_file)
-        {
-            $match_info_file = $match_outfile;
-        }   
+        print STDERR "\nFiltering blast input at $blast_filter alignment coverage\n";
+		my $pct_cutoff =$blast_filter;
+		`$script_path/filter_blast.pl -q $genome_fasta -t $tab_input -c $config_filename -f $pct_cutoff`;
+  
+		my @suffixlist = ("faa", "fasta", "fsa", "m8", "blast", "blastp");
+		my $basename = fileparse($tab_input, @suffixlist);
+		my $extension = $pct_cutoff * 100;
+		my $blast_outfile = "$basename"."filt"."$extension";
+		my $query_outfile = "$blast_outfile"."_query_info";
+		my $match_outfile = "$blast_outfile"."_match_info";
+		$tab_input = $blast_outfile;
+	
+		unless (defined $query_info_file && -s $query_info_file)
+		{
+			$query_info_file = $query_outfile;
+		}
+	
+		unless (defined $match_info_file && -s $match_info_file)
+		{
+			$match_info_file = $match_outfile;
+		}   
+    }
+    else
+    {
+    	print STDERR "\n  WARNING: Blast filter setting = $blast_filter. No filtering performed for minimum alignment coverage\n";
     }
     my $t_finish_blast_filter = new Benchmark;
     
@@ -234,12 +249,14 @@ Input parameters:
 	my $dbh = DBI->connect($db_path, $db_user, $db_user_password) or die "Cannot connect: $DBI::errstr";
 
 ##############################
-# Shouldn't be necessary if these sequences have been pre-excluded from 
-# reference fasta file used for initial blastp search
+# Even if sequences with fewer than minimum number of terms have been pre-excluded from
+# reference fasta file used for initial blastp search, need to deal with case where
+# database creation parameters are less stringent than minumum number of terms in
+# current analysis
 
 # Get list of database id numbers with missing lineage information
 	my $t_start_missing_lineage_search = new Benchmark;
-	print STDERR "\nFinding database entries with insufficient lineage information\n";
+	print STDERR "\nFinding database entries with insufficient lineage information (<$min_lineage_terms terms)\n";
 	$table_name = "lineage_index";
 	
 	my @bad_ids = ();
@@ -264,20 +281,13 @@ Input parameters:
 
 	foreach (@bad_ids)
 	{
-		my @subterms = split /\|/, $_;
+		chomp;
 		my $full_id = $_;
-		my $gi_num = $subterms[1];
-		my $alt_id = $subterms[3];
-		$missing_lineage_ids{$full_id} = "full_id missing lineage";
-		if (defined $gi_num)
-		{
-			$missing_lineage_ids{$gi_num} = "gi_num missing lineage";
-		}
-		if (defined $alt_id)
-		{
-			$missing_lineage_ids{$alt_id} = "alt_id missing lineage";
-		}
-		$missing_lineage_count++;		
+	# get rid of extra spaces and tabs inserted by blast/diamond software
+		$full_id =~ s/ //sg;
+		$full_id =~ s/\t//sg;
+		$missing_lineage_ids{"$full_id"} = 1;
+		$missing_lineage_count++;
 	}	
 
 	my $t_finish_missing_lineage_search = new Benchmark;
@@ -290,9 +300,7 @@ Input parameters:
 	if ($debug ==1)
 	{
 		print LOGFILE "\n\nFound $missing_lineage_count database entries without lineage information\n";
-}
-
-##############################
+	}
 	
 # Get species name, tax_id and lineage for all matches from SQL database 
 	print STDERR "Finding species names for blast matches\n";
@@ -301,16 +309,12 @@ Input parameters:
 	@getlist = split "\n", $getlist;
 	
 # remove any match id numbers that have no lineage data from list
-# also remove any matches that have less than two terms for species names
-
+# also remove any matches that have less than the minumum number of terms for species names
  	my @filtered_getlist = ();
 	foreach (@getlist)
  	{		
-		my @subterms = split /\|/, $_;
- 		my $alt_id = $subterms[3] || "none";
-		if (exists $missing_lineage_ids{$_} 
-			|| exists $missing_lineage_ids{$alt_id}
- 			)
+		chomp;		
+		if (exists $missing_lineage_ids{$_})
  		{
  			next;
  		}
