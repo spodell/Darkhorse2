@@ -239,22 +239,22 @@ USAGE INSTRUCTIONS
                 tend to increase false positive HGT predictions for query sets with
                 abundant database relatives. 
             
-            -n  <minimum number lineage terms> [default = 1]
+            -n  <minimum number lineage terms> [default = 2]
                 Sets the minimum number of lineage terms required for a match to be
                 included in the taxonomy determination. For horizontal gene transfer
                 studies, setting this value lower than 3 is not recommended, because
                 it may cause matches with poorly characterized taxonomy to obscure more
-                informative matches. However, the default value of 1 may work better if
-		the query itself is from a poorly-characterized, novel taxonomic group. 
-		For metagenomic studies, users willing to accept reduced specificity
-                may want to try lowering this value to boost sensitivity.
+                informative matches. For metagenomic studies, users willing to accept 
+		reduced specificity and phylum-level granularity for taxonomic assignment
+		may want to try lowering this value to boost sensitivity.
 		
-	   -b <blast filter> [default = off]
+	   -b <blast filter> [default = 0.7]
 	   	Values should be between 0-1 (Recommended 0.7). Sets the minimum alignment 
 		length for blast matches as a percentage of the query and match sequence
 		lengths (e.g. for a setting of 0.7, the blast alignment must cover at least
 		70% of both query and database match sequences). Slows performance significantly 
-		for large metagenomic data sets, but greatly improves accuracy.
+		for large metagenomic data sets, but greatly improves accuracy and reduces 
+		spurious matches to low-complexity regions. Set to value of zero to turn off.
      
      C. Supplementing a previously installed MySQL database 
     	
