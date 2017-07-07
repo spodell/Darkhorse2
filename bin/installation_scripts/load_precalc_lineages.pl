@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_precalc_lineages.pl
 # Sheila Podell
 # March 31, 2009

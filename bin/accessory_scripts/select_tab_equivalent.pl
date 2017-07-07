@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl 
 # select_tab_equivalent.pl 
 # Sheila Podell 
 # October 21, 2005

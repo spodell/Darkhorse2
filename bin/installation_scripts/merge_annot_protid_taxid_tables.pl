@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl 
 # merge_annot_protid_taxid_tables.pl 
 # Sheila Podell 
 # November 14, 2016

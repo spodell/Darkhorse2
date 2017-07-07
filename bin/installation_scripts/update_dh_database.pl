@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # update_dh_database.pl
 # Sheila Podell 
 # December 19, 2016

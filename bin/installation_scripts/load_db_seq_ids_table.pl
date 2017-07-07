@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_db_seq_ids_table.pl
 # Sheila Podell
 # March 30, 2009

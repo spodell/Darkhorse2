@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # get_nr_seq_info_v2.pl
 # Sheila Podell 
 # October 2, 2016

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # getseq_multiple.pl
 # Sheila Podell 
 # December 8, 2004

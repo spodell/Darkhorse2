@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl 
 # select_tab_first.pl 
 # Sheila Podell 
 # August 2, 2005

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_protid_taxid_table.pl
 # Sheila Podell
 # November 5, 2016

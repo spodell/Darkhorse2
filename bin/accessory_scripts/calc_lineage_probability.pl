@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # calc_lineage_probability.pl
 # Sheila Podell 
 # June 2, 2007

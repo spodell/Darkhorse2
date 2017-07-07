@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_lineage_index_table.pl
 # Sheila Podell
 # June 3, 2007
