@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # subset_informative_fasta.pl
 # Sheila Podell
 # December 23, 2016

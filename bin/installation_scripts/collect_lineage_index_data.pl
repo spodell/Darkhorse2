@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl 
 # collect_lineage_index_data.pl 
 # Sheila Podell 
 # June 3, 2007

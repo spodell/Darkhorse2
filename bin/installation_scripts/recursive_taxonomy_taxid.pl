@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # recursive_taxonomy_v2.pl
 # Sheila Podell
 # December 16, 2016

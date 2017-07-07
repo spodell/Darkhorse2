@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_annotation_table.pl
 # Sheila Podell
 # September 4, 2016

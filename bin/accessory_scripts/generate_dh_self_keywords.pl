@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # generate_dh_self_keywords.pl
 # Sheila Podell
 # January 25, 2016

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # load_taxonomy_names.pl
 # Sheila Podell
 # June 19, 2007

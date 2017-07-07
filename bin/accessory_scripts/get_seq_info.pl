@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # get_seq_info.pl
 # Sheila Podell 
 # May 21, 2006

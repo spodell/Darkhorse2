@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # filter_blast.pl 
 # Sheila Podell 
 # May 21, 2017
