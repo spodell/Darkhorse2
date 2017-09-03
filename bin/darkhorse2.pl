@@ -72,7 +72,7 @@ use Benchmark;		# for timing code
 	my %query_list = (); # key = query_ID, value = object_ref 
 	my $debug = 0; # 0 = off 1 = on
 	my $genome_fasta = "";
-        my $result_dir = "";
+	my $result_dir = "";
 	my ($table_name, $firstline, $getlist);
 	my ($sql, $sth, $select_names);	
 	my @getlist = ();
@@ -91,7 +91,7 @@ use Benchmark;		# for timing code
   	-c  <config path/file name>
  
   Optional parameters:
-        -o  <output results folder> [default = current working directory]
+	-o  <output results folder> [default = current working directory]
 	-f  <filter threshold> [default = 0.1] 
 	-n  <minimum number lineage terms>
 	-d  <debug>
@@ -220,7 +220,7 @@ use Benchmark;		# for timing code
 	}
 
 # set up a working directory, move there
-        if ($result_dir == "")
+	if ($result_dir == "")
 	{
 		$result_dir = "calcs"."_"."$$"."_filt_$filter_threshold";
 	}
