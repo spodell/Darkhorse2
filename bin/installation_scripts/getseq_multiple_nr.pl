@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 # getseq_multiple_nr.pl
 # Sheila Podell 
 # October 11, 2006
