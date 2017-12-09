@@ -234,7 +234,9 @@ Input parameters:
 	exclude_file_name 	$exclude_file
 	fasta_file_name		$fasta_file
 	filter_threshold	$filter_threshold
-	config_file			$config_filename\n);	
+	config_file		$config_filename
+	min_lineage_terms	$min_lineage_terms
+	min_align_coverage	$min_aln_coverage\n);	
 
 	if ($debug ==1)
 	{
