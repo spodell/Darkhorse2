@@ -113,7 +113,7 @@ use DBI;
   `inherited_MGC_flag` int(11) default NULL,
   `GenBank_hidden_flag` int(11) default NULL,
   `hidden_subtree_root_flag` int(11) default NULL,
-  `comments` int(11) default NULL,
+  `comments` varchar(50) default NULL,
   PRIMARY KEY  (`tax_id`)
 );\n);
 					
