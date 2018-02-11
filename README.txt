@@ -119,7 +119,7 @@ INSTALLATION
    
    	tar -xzvf DarkHorse-2.0_revXX.tar.gz
 	chmod -R 755 DarkHorse-2.0_revXX
-   
+  
    A template configuration file is provided (templates/config_template), 
    which must be manually edited to include appropriate local information, 
    including paths to downloaded files, MySQL database name, MySQL user name,
@@ -140,8 +140,12 @@ INSTALLATION
    The user-edited version of the configuration file is passed as a command 
    line parameter to the installation program:
             
-         ./install_darkhorse2.pl -c config_filename    
-    	
+         ./install_darkhorse2.pl -c config_filename        	
+  
+   It is recommended that users disable "strict mode" for their MySQL program 
+   prior to DarkHorse installation. After installation is complete, this  
+   parameter can optionally be turned back on, if desired. 
+   
    Note that the installation script may take a substantial amount of time to
    run (e.g many hours). In addition to creating and populating required MySQL
    tables, the installation script produces a log file containing detailed
