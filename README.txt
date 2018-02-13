@@ -142,9 +142,18 @@ INSTALLATION
             
          ./install_darkhorse2.pl -c config_filename        	
   
-   It is recommended that users disable "strict mode" for their MySQL program 
-   prior to DarkHorse installation. After installation is complete, this  
-   parameter can optionally be turned back on, if desired. 
+   Users of Oracle-MySQL version 5.6 or later should disable "strict mode" 
+   in their MySQL program configuration prior to DarkHorse installation. 
+   After installation is complete, this parameter can optionally be turned 
+   back on, if desired. Strict mode is turned off by default in MariaDB 
+   and earlier versions of MySQL. The reason why strict mode is a problem 
+   is that database loading is performed in very large batches (packets), 
+   containing thousands of sequences at a time. Every time there is an entry 
+   with a field that fails to meet table format specifications (e.g. too many 
+   characters) MySQL in strict mode discards the entire packet, including all 
+   of the entries that were actually good. When strict mode is disabled, lines 
+   exceeding the maximum number of characters are fixed by truncation, and then 
+   everything else proceeds normally. 
    
    Note that the installation script may take a substantial amount of time to
    run (e.g many hours). In addition to creating and populating required MySQL
