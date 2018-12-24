@@ -143,7 +143,8 @@ INSTALLATION
          ./install_darkhorse2.pl -c config_filename        	
   
    Users of Oracle-MySQL version 5.6 or later should disable "strict mode" 
-   in their MySQL program configuration prior to DarkHorse installation. 
+   in their MySQL program configuration prior to DarkHorse installation.
+   (e.g. "set global sql_mode=‘';" from mysql program command line)
    After installation is complete, this parameter can optionally be turned 
    back on, if desired. Strict mode is turned off by default in MariaDB 
    and earlier versions of MySQL. The reason why strict mode is a problem 
@@ -159,7 +160,8 @@ INSTALLATION
    run (e.g many hours). In addition to creating and populating required MySQL
    tables, the installation script produces a log file containing detailed
    notes on any errors that may have occurred, and new fasta formatted
-   sequence file of taxonomically informative sequences. The taxonomically
+   sequence file of taxonomically informative sequences. A sample logfile 
+   is now included in the templates directory. The taxonomically
    informative fasta file will be named using the following convention:
             
          databasename_informative_ref_seqs.fasta    
