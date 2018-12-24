@@ -1,0 +1,55 @@
+###################################################
+  Darkhorse version 2 installation logfile
+###################################################
+
+Installation settings: 
+	program directory = /opt/Darkhorse2-rev07
+	config filename = /opt/Darkhorse2-rev07/dh2_010118.cfg
+	reference fasta file = /raid/databases/nr_databases/jan2018/nr
+	accession tax id file = /raid/databases/nr_databases/jan2018/prot.accession2taxid
+	MySQL database name = dh2_010118
+	max_lines_per_packet = 16000
+			    
+Tue Jan  2 07:42:59 PST 2018  Loading taxonomy names table into MySQL database dh2_010118
+Tue Jan  2 07:43:00 PST 2018  MySQL names table loading complete: contains 2,498,152 rows
+Tue Jan  2 07:43:00 PST 2018  Loading taxonomy nodes table into MySQL database dh2_010118
+Tue Jan  2 07:43:00 PST 2018  MySQL nodes table loading complete: contains 1,669,114 rows
+Tue Jan  2 07:43:00 PST 2018  Collecting unique tax ids from prot.accession2taxid
+Tue Jan  2 07:47:21 PST 2018  Found 841,656 unique taxonomy ids.
+Tue Jan  2 07:47:21 PST 2018  Pre-calculating lineages.
+  NOTE: this step may take 31 or more minutes.
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/catalog_tax_ids.
+Tue Jan  2 22:10:19 PST 2018  Collecting species names associated with tax_ids.
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/catalog_tax_id_lineages.
+Tue Jan  2 22:10:34 PST 2018  Loading precalc_lineages table into MySQL database dh2_010118
+Tue Jan  2 22:11:11 PST 2018  MySQL precalc_lineages table loading complete: contains 841,459 rows
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/raw_lineages.tab.
+Tue Jan  2 22:11:11 PST 2018  Identifying informative tax_ids
+Tue Jan  2 22:11:14 PST 2018  Loading table protid_taxid into MySQL database dh2_010118.
+Tue Jan  2 23:51:43 PST 2018  MySQL protid_taxid table loading complete: contains 445,317,763 rows
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/sorted_accession_taxid_index.
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/informative_taxids.
+Tue Jan  2 23:54:45 PST 2018  Extracting annotations for 141,069,291 reference sequences.
+  NOTE: this step may take 1 or more hours.
+Wed Jan  3 00:26:10 PST 2018  Found 141,069,291 annotations.
+Wed Jan  3 00:26:10 PST 2018  Loading annotations table into MySQL database dh2_010118.
+Wed Jan  3 01:06:06 PST 2018  MySQL annotation table loading complete: contains 141,069,291 rows
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/annotations.tab.
+Wed Jan  3 01:06:07 PST 2018  Combining taxonomy info with sequence data.
+  NOTE: this step may take 1 or more hours.
+Wed Jan  3 01:20:37 PST 2018  Finished combining taxonomy info with sequence data
+   dropping temporary MySQL table protid_taxid.
+Wed Jan  3 01:20:39 PST 2018  Loading table db_seq_ids into MySQL database dh2_010118.
+Wed Jan  3 01:56:12 PST 2018  MySQL db_seq_ids table loading complete: contains 131,693,898 rows
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/nr_all_ids.tab.
+Wed Jan  3 01:56:13 PST 2018  Creating master lineage index
+Wed Jan  3 02:04:41 PST 2018  Loading table lineage_index into MySQL database dh2_010118.
+Wed Jan  3 02:44:12 PST 2018  MySQL lineage_index table loading complete: contains 131,141,955 rows
+   dropping temporary MySQL table annotation.
+Wed Jan  3 02:44:12 PST 2018  Finished loading MySQL tables.
+Wed Jan  3 02:44:12 PST 2018  Creating informative_ref_seqs.fasta file.
+Wed Jan  3 02:44:12 PST 2018  Finished selecting informative reference sequences into fasta file
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/all_lineages.tab.
+   deleting temporary file /opt/Darkhorse2-rev07//input_data/selected_seq_ids.
+   deleting temporary directory /opt/Darkhorse2-rev07//input_data.
+Wed Jan  3 03:15:10 PST 2018  Finished installing DarkHorse2. Thanks for your patience.
