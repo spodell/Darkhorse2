@@ -11,7 +11,9 @@
 
 # note: this version skips uninformative input tax_ids 0,1,2 (all, root, Bacteria) 
 # warns & skips obsolete tax_ids (e.g. prot.accession2taxid not synchronized with taxonomy names table)
-  
+
+# modified December 22, 2018 to fix conflict with Oracle-community MySQL versions (> 5.6) installed on OSX 
+	
 use warnings;
 use Getopt::Long;
 use DBI;
@@ -150,7 +152,7 @@ use DBI;
 			
 		# if anything was returned, check to be sure it's rank is approved
 			my $current_name = $query{name_txt};				
-			$sql = "select rank from nodes where tax_id=$Tax{$key}";
+			$sql = qq(select nodes.rank from nodes where tax_id=$Tax{$key});
 			$sth = $dbh->prepare($sql)
 			or dieStackTrace("Cannot prepare SELECT '$sql':\n<b>$DBI::errstr</b>");
 			$sth->execute()
@@ -216,8 +218,7 @@ sub read_config_file
 sub nodes(){
 	my($tax_id,%Tax)=@_;
 	$recursion_count++;
-		
-	$sql2 = "select parent_tax_id, rank from nodes where tax_id=$tax_id";
+	$sql2 = qq(select parent_tax_id, nodes.rank from nodes where tax_id=$tax_id);
     $sth2 = $dbh->prepare($sql2)
             or dieStackTrace("Cannot prepare SELECT '$sql':\n<b>$DBI::errstr</b>");
     $sth2->execute()
