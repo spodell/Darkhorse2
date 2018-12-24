@@ -55,7 +55,7 @@ SYSTEM REQUIREMENTS/DEPENDENCIES
    and tab-delimited BLASTP sequence comparisons for query sequences.  
    Total disk space required is roughly triple the size of the decompressed protein 
    reference database. Program performance depends primarily on MySQL database 
-   access efficiency. A multi-processor CPU with at least 16 GB of RAM is recommended. 
+   access efficiency. A multi-processor CPU with at least 32 GB of RAM is recommended. 
      
    DarkHorse is a command-line only program, and requires the Unix OS. 
    It has been installed, tested, and run on multiple versions of Linux and 
