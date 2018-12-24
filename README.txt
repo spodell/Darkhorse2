@@ -203,7 +203,7 @@ USAGE INSTRUCTIONS
                               
         3. Run darkhorse.pl from the unix command line, e.g.
             
-            darkhorse2.pl -c config_file -t blast_tab_infile -e exclude list -g self.fasta 
+            darkhorse2.pl -c config_file -t blast_tab_infile -e exclude_list -g self.fasta 
                
             Output from the program will be written to a new directory, named
             using the following convention:
