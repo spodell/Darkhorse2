@@ -1,5 +1,5 @@
 README.txt for DarkHorse version 2.0
-May 2017
+January 2019
 Author: Sheila Podell
 
 ----------------------------------------
@@ -362,7 +362,7 @@ VERSION HISTORY
  CONTACT INFORMATION
  
     Please send bug reports to: spodell@ucsd.edu
-    Copyright 2017 S. Podell, University of California, San Diego. 
+    Copyright 2019 S. Podell, University of California, San Diego. 
     All rights reserved.
   
 ----------------------------------------
