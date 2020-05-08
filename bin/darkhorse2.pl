@@ -72,6 +72,7 @@ use Benchmark;		# for timing code
 	my %query_list = (); # key = query_ID, value = object_ref 
 	my $debug = 0; # 0 = off 1 = on
 	my $genome_fasta = "";
+	my $result_dir = "";
 	my ($table_name, $firstline, $getlist);
 	my ($sql, $sth, $select_names);	
 	my @getlist = ();
@@ -90,6 +91,7 @@ use Benchmark;		# for timing code
   	-c  <config path/file name>
  
   Optional parameters:
+	-o  <output results folder> [default = current working directory]
 	-f  <filter threshold> [default = 0.1] 
 	-n  <minimum number lineage terms>
 	-d  <debug>
@@ -113,6 +115,7 @@ use Benchmark;		# for timing code
         		"b=f" => \$blast_filter,           #  minimum % coverage for blast alignments
         		"q=s" => \$query_info_file,
         		"m=s" => \$match_info_file,        		
+        		"o=s" => \$result_dir,        		
         );
         
  # get global parameters from config file
@@ -217,7 +220,10 @@ use Benchmark;		# for timing code
 	}
 
 # set up a working directory, move there
-	my $result_dir = "calcs"."_"."$$"."_filt_$filter_threshold";
+	if ($result_dir == "")
+	{
+		$result_dir = "calcs"."_"."$$"."_filt_$filter_threshold";
+	}
 	mkdir $result_dir, 0755 or warn "Cannot make results directory $result_dir\n: $!";
 	chdir $result_dir;
 	my $cwd = getcwd();
