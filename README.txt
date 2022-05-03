@@ -133,9 +133,9 @@ INSTALLATION
    away.) Suggested settings based on total system memory (with no programs 
    other than DarkHorse being run concurrently), are as follows:
     
-    	16 GB RAM  [max_lines_per_packet]=4000  (default value)
     	32 GB RAM  [max_lines_per_packet]=8000
     	64 GB RAM  [max_lines_per_packet]=16000
+       128 GB RAM  [max_lines_per_packet]=32000
    
    The user-edited version of the configuration file is passed as a command 
    line parameter to the installation program:
